@@ -7,7 +7,9 @@
         </p>
 
         @forelse ($items as $pesanan)
-            <x-pesanan-list :$pesanan key="$pesanan->id" />
+            <div wire:key="{{ $pesanan->id }}">
+                <x-pesanan-list :$pesanan />
+            </div>
         @empty
             <p class="p-5 bg-primary-100 rounded-md text-center text-gray-500">pesanan belum dibuat</p>
         @endforelse
