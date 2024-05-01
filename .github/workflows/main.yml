@@ -8,11 +8,6 @@ jobs:
       - name: 🚚 Get latest Code
         uses: actions/checkout@v3
 
-      - name: Install Composer
-        uses: MilesChou/composer-action/8.1@master
-        with:
-          args: install
-
       - name: Use Node.js 16
         uses: actions/setup-node@v2
         with:
@@ -20,7 +15,6 @@ jobs:
 
       - name: Build Project
         run: |
-          composer install --ignore-platform-reqs
           npm install
           npm run build
 
