@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\Authenticate;
+use App\Livewire\PembayaranCreate;
+use App\Livewire\PesananCreate;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::view('/', 'index')->name('home');
+Route::get('/pesan', PesananCreate::class)->middleware(Authenticate::class)->name('pesan');
+Route::get('/bayar', PembayaranCreate::class)->middleware(Authenticate::class)->name('bayar');
