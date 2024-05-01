@@ -1,0 +1,33 @@
+on: push
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest Code
+        uses: actions/checkout@v3
+
+      - name: Install Composer
+        uses: MilesChou/composer-action@master
+        with:
+          args: install
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Build Project
+        run: |
+          composer install --ignore-platform-reqs
+          npm install
+          npm run build
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: 154.41.240.56
+          server-dir: oxygen/
+          username: u379276371.hugo
+          password: ${{ secrets.ftp_password }}

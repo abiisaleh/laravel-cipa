@@ -35,16 +35,15 @@ class PesanForm extends Form
         else
             $harga = $tabung->harga_kosong;
 
-        $data = [
-            'tabung_id' => $tabung->id,
-            'tabung' => 'tabung ' . $tabung->jenis . ' ' . $tabung->ukuran . ' ' . $this->isi,
-            'harga' => $harga,
-            'jumlah' => $this->qty
-        ];
-
         $this->validate();
 
-        Pesanan::create($data);
+        Pesanan::create([
+            'user_id' => auth()->id(),
+            'tabung_id' => $tabung->id,
+            'nama' => implode(' ', ['tabung', $tabung->jenis, $tabung->ukuran, $this->isi]),
+            'harga' => $harga,
+            'qty' => $this->qty
+        ]);
     }
 
     public function drop($id)

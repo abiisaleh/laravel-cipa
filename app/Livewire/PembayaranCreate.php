@@ -21,8 +21,14 @@ class PembayaranCreate extends Component
 
     function refreshData()
     {
-        $this->items = Pesanan::all();
-        $this->total = Pesanan::all()->sum('subtotal');
+        $keranjang = Pesanan::where('pembayaran_id', null)->get();
+        $this->items = $keranjang;
+        $this->total = $keranjang->sum('subtotal');
+    }
+
+    public function save(Pesanan $pesanan)
+    {
+        $this->form->store($pesanan->id);
     }
 
     public function delete(Pesanan $pesanan)

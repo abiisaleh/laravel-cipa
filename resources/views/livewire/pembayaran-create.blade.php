@@ -15,7 +15,7 @@
         @endforelse
 
         @if ($items->isNotEmpty())
-            <form>
+            <form wire:submit="save">
                 @csrf
                 <div class="w-full" x-data="{ open: false }">
                     <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white mt-8">Metode pembayaran</h3>

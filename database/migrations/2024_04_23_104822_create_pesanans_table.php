@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pesanans', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(App\Models\User::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(App\Models\User::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(App\Models\Tabung::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(App\Models\Pembayaran::class)->nullable()->constrained()->cascadeOnDelete();
             $table->string('nama');

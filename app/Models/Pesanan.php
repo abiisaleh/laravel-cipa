@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Pesanan extends Model
 {
     use HasFactory;
+
+    public function getNamaAttribute($value)
+    {
+        return ucfirst($value);
+    }
 }
