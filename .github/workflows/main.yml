@@ -8,16 +8,6 @@ jobs:
       - name: 🚚 Get latest Code
         uses: actions/checkout@v3
 
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-
-      - name: Build Project
-        run: |
-          npm install
-          npm run build
-
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -25,3 +15,16 @@ jobs:
           server-dir: oxygen/
           username: u379276371.hugo
           password: ${{ secrets.ftp_password }}
+
+      - name: 📡 SSH and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: 154.41.240.56
+          port: 65002
+          username: u379276371
+          password: ${{ secrets.ssh_password }}
+          script: |
+            cd domains/abiisaleh.xyz/public_html/oxygen/
+            composer i --ignore-platform-reqs
+            npm i
+            npm run build
