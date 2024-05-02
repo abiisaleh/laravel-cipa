@@ -15,16 +15,3 @@ jobs:
           server-dir: oxygen/
           username: u379276371.hugo
           password: ${{ secrets.ftp_password }}
-
-      - name: 📡 SSH and Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: 154.41.240.56
-          port: 65002
-          username: u379276371
-          password: ${{ secrets.ssh_password }}
-          script: |
-            cd domains/abiisaleh.xyz/public_html/oxygen/
-            composer i --ignore-platform-reqs
-            /home/u379276371/downloads/node-v18.18.2-linux-x64/bin/npm install
-            /home/u379276371/downloads/node-v18.18.2-linux-x64/bin/npm run build
