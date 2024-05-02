@@ -17,5 +17,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::view('/', 'index')->name('home');
-Route::get('/pesan', PesananCreate::class)->middleware(Authenticate::class)->name('pesan');
-Route::get('/bayar', PembayaranCreate::class)->middleware(Authenticate::class)->name('bayar');
+Route::get('/pesan', PesananCreate::class)
+    // ->middleware(Authenticate::class)
+    ->name('pesan');
+Route::get('/bayar', PembayaranCreate::class)
+    // ->middleware(Authenticate::class)
+    ->name('bayar');

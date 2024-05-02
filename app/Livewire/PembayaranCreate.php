@@ -10,7 +10,7 @@ use Livewire\Component;
 class PembayaranCreate extends Component
 {
     public $items = [];
-    public $total;
+    public $total = 0;
 
     public PesanForm $form;
 
@@ -45,6 +45,8 @@ class PembayaranCreate extends Component
 
     public function render()
     {
-        return view('livewire.pembayaran-create');
+        return view('livewire.pembayaran-create', [
+            'banks' => ['BCA', 'BNI', 'BRI', 'MANDIRI']
+        ]);
     }
 }

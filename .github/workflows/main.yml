@@ -26,5 +26,5 @@ jobs:
           script: |
             cd domains/abiisaleh.xyz/public_html/oxygen/
             composer i --ignore-platform-reqs
-            npm i
-            npm run build
+            /home/u379276371/downloads/node-v18.18.2-linux-x64/bin/npm install
+            /home/u379276371/downloads/node-v18.18.2-linux-x64/bin/npm run build
