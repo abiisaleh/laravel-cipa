@@ -24,8 +24,8 @@ Route::middleware([
     Route::prefix('order')->group(function () {
         Route::view('/', 'pesanan.index');
         Route::get('/new', \App\Livewire\CreatePesanan::class);
-        Route::get('/{item}', function (\App\Models\Pesanan $item) {
-            return view('pesanan.view', ['item' => $item]);
+        Route::get('/{record}', function (\App\Models\Pesanan $record) {
+            return view('pesanan.view', ['item' => $record]);
         });
     });
 
@@ -36,7 +36,7 @@ Route::middleware([
 });
 
 
-Route::post('/xendit-callback', function () {
+Route::post('/checkout/callback', function () {
     $data = request()->all()['data'];
     $id = $data['reference_id'];
 
