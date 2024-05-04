@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Middleware\Authenticate;
-use App\Livewire\PembayaranCreate;
-use App\Livewire\PesananCreate;
+use App\Livewire\CreatePesanan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,10 +15,44 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'index')->name('home');
-Route::get('/pesan', PesananCreate::class)
-    // ->middleware(Authenticate::class)
-    ->name('pesan');
-Route::get('/bayar', PembayaranCreate::class)
-    // ->middleware(Authenticate::class)
-    ->name('bayar');
+Route::view('/', 'index');
+
+Route::middleware([
+    // Authenticate::class
+])->group(function () {
+
+    Route::prefix('order')->group(function () {
+        Route::view('/', 'pesanan.index');
+        Route::get('/new', \App\Livewire\CreatePesanan::class);
+        Route::get('/{item}', function (\App\Models\Pesanan $item) {
+            return view('pesanan.view', ['item' => $item]);
+        });
+    });
+
+    Route::prefix('checkout')->group(function () {
+        Route::view('/new', 'pembayaran');
+        Route::view('/selesai', 'checkout');
+    });
+});
+
+
+Route::post('/xendit-callback', function () {
+    $data = request()->all()['data'];
+    $id = $data['reference_id'];
+
+    //ubah status jadi lunas
+
+    // if ($data['status'] == 'SUCCEEDED') {
+    //     $booking = Booking::find($id);
+
+    //     if (is_null($booking)) {
+    //         return response('Data tidak ditemukan')->json();
+    //     }
+
+    //     $booking->lunas = 1;
+    //     $booking->save();
+
+    //     return response('Status berhasil diubah')->json();
+    // }
+    return response($data)->json();
+});

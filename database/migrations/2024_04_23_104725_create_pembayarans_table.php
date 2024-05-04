@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(App\Models\Pelanggan::class)->nullable()->constrained()->nullOnDelete();
+            $table->string('va_id')->nullable();
             $table->string('metode');
-            $table->integer('bayar');
+            $table->integer('subtotal');
+            $table->integer('ongkir');
             $table->integer('denda')->default(0);
             $table->boolean('lunas')->default(false);
             $table->boolean('diterima')->default(false);

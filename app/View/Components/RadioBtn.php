@@ -14,6 +14,7 @@ class RadioBtn extends Component
     public function __construct(
         public string $name,
         public string $value,
+
     ) {
         //
     }

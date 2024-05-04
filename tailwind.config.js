@@ -28,7 +28,43 @@ export default {
                 950: "#1E1B4B",
             },
         },
-        extend: {},
+        extend: {
+            animation: {
+                wave: "wave 2.5s infinite",
+                shake: "shake 2.5s infinite",
+            },
+            keyframes: {
+                wave: {
+                    "0%, 60%, 100%": { transform: "rotate(0deg)" },
+                    "10%, 30%": { transform: "rotate(14deg)" },
+                    "20%": { transform: "rotate(-8deg)" },
+                    "40%": { transform: "rotate(-4deg)" },
+                    "50%": { transform: "rotate(10deg)" },
+                },
+                shake: {
+                    "0%,60%,100%": { transform: "translate(0, 0)" },
+                    "10%, 30%": { transform: "translate(-1px, 0)" },
+                    "20%": { transform: "translate(-3px, 0)" },
+                    "40%": { transform: "translate(-4px, 0)" },
+                    "50%": { transform: "translate(-7px, 0)" },
+                },
+            },
+        },
+        fontFamily: {
+            body: [
+                "Rototo",
+                "Inter",
+                "ui-sans-serif",
+                "system-ui",
+                // other fallback fonts
+            ],
+            sans: [
+                "Inter",
+                "ui-sans-serif",
+                "system-ui",
+                // other fallback fonts
+            ],
+        },
     },
     plugins: [require("flowbite/plugin")],
 };
