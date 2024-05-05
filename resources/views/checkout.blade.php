@@ -1,4 +1,4 @@
-<x-layouts.app bodyClass="bg-primary-500" footerClass="text-white">
+<x-layouts.app theme="1">
     <section>
         <div class="py-12 px-4 mx-auto max-w-screen-xl text-left min-h-[78vh]">
             <div class="relative md:w-1/2 mx-auto shadow-lg bg-white rounded border-b">

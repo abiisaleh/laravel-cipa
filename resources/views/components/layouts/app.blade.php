@@ -1,3 +1,7 @@
+@php
+    $active = $theme ?? 0;
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -15,7 +19,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="antialiased {{ $bodyClass ?? '' }}">
+<body class="antialiased {{ $active ? 'bg-primary-500' : '' }}">
 
     <x-navbar />
 
@@ -28,7 +32,7 @@
     <footer>
         <div class="w-full max-w-screen-xl mx-auto p-4">
             <hr class="my-6 border-gray-200 sm:mx-auto lg:my-8" />
-            <span class="block text-sm {{ $footerClass ?? '' }} text-gray-500 text-center ">© 2024 made by <a
+            <span class="block text-sm {{ $active ? 'text-white' : 'text-gray-500' }} text-center ">© 2024 made by <a
                     href="https://abiisaleh.xyz/" class="hover:underline">abiisaleh</a> with 💗</span>
         </div>
     </footer>

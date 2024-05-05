@@ -5,7 +5,7 @@
                 <span
                     class="self-center text-xl font-semibold whitespace-nowrap text-white">{{ config('app.name') }}</span>
             </a>
-            <div class="flex items-center lg:order-2 me-2">
+            <div class="flex items-center lg:order-2 md:me-2">
                 <div>
                     @if (auth()->check())
                         <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName"
