@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('kode')->unique();
             $table->enum('jenis', ['oksigen', 'nitrogen']);
             $table->string('ukuran');
-            $table->integer('berat');
+            $table->integer('berat')->default(10);
             $table->integer('stok')->default(1);
             $table->integer('harga_full');
             $table->integer('harga_refill');

@@ -14,26 +14,34 @@
                         <div class="md:flex justify-center">
                             <div class="w-full">
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
-                                    <x-radio-btn id="jenis-oksigen" name="jenis" value="oksigen">
-                                        <h1 class="text-8xl w-full pb-4 font-bold">O₂</h1>
-                                        <div class="text-sm w-full">Oksigen</div>
-                                    </x-radio-btn>
-                                    <x-radio-btn id="jenis-nitrogen" name="jenis" value="nitrogen">
-                                        <h1 class="text-8xl w-full pb-4 font-bold">N</h1>
-                                        <div class="text-sm w-full">Nitrogen</div>
-                                    </x-radio-btn>
+                                    <div wire:click="cekTabung">
+                                        <x-radio-btn id="jenis-oksigen" name="jenis" value="oksigen">
+                                            <h1 class="text-8xl w-full pb-4 font-bold">O₂</h1>
+                                            <div class="text-sm w-full">Oksigen</div>
+                                        </x-radio-btn>
+                                    </div>
+
+                                    <div wire:click="cekTabung">
+                                        <x-radio-btn id="jenis-nitrogen" name="jenis" value="nitrogen"
+                                            wire:click="cekTabung">
+                                            <h1 class="text-8xl w-full pb-4 font-bold">N</h1>
+                                            <div class="text-sm w-full">Nitrogen</div>
+                                        </x-radio-btn>
+                                    </div>
                                 </ul>
 
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white mt-8">Ukuran</h3>
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-3 text-center">
                                     @foreach (['kecil', 'sedang', 'besar'] as $value)
-                                        <div wire:click="cekTabung">
+                                        <div wire:click="cekUkuran">
                                             <x-radio-btn id="ukuran-{{ $value }}" name="ukuran" :$value>
                                                 <div class="w-full">
                                                     <h4 class="text-sm md:text-md font-semibold">
                                                         {{ ucfirst($value) }}
                                                     </h4>
-                                                    <p class="text-sm md:text-md">{{ number_format($berat) }} g</p>
+                                                    <p class="text-sm md:text-md">
+                                                        {{ number_format($berat[$value] ?? 0) }} g
+                                                    </p>
                                                 </div>
                                             </x-radio-btn>
                                         </div>
@@ -84,13 +92,13 @@
                                             <div class="relative w-full">
                                                 <div x-on:click="qty = qty > 1 ? qty-1 : qty" wire:click="decrement"
                                                     class="absolute start-0 bottom-0 text-gray-500 bg-white border border-gray-200 rounded-lg p-5 hover:text-gray-600 hover:bg-gray-100 cursor-pointer">
-                                                    @svg('heroicon-s-minus', 'w-2 h-2')
+                                                    @svg('heroicon-s-minus', ['class' => 'w-2 h-2 md:w-4 md:h-4'])
                                                 </div>
                                                 <input type="number" wire:model="label.qty" x-model="qty" disabled
                                                     class="ps-7 text-center border-gray-100 focus:border-gray-100 border-x-0 focus:ring-0 font-medium text-2xl md:text-4xl text-primary-600 w-full rounded-lg" />
                                                 <div x-on:click="qty = qty < 99 ? qty+1 : 99" wire:click="increment"
                                                     class="absolute end-0 bottom-0 text-gray-500 bg-white border border-gray-200 rounded-lg p-5 hover:text-gray-600 hover:bg-gray-100 cursor-pointer">
-                                                    @svg('heroicon-s-plus', 'w-2 h-2')
+                                                    @svg('heroicon-s-plus', ['class' => 'w-2 h-2 md:w-4 md:h-4'])
                                                 </div>
                                             </div>
                                         </div>
@@ -136,20 +144,20 @@
                             <div x-data="{ open: false }">
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
                                     <div x-on:click="open = false">
-                                        <x-radio-btn name="ukuran" value="cash">
+                                        <x-radio-btn name="jenis-pembayaran" value="cash">
                                             <div class="w-full">Cash</div>
                                         </x-radio-btn>
                                     </div>
                                     <div x-on:click="open = true">
-                                        <x-radio-btn name="ukuran" value="transfer">
+                                        <x-radio-btn name="jenis-pembayaran" value="transfer">
                                             <div class="w-full">Transfer Bank</div>
                                         </x-radio-btn>
                                     </div>
                                 </ul>
 
-                                <select x-show="open"
+                                <select x-show="open" name="metode"
                                     class="mt-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                    <option selected>Pilih Bank</option>
+                                    <option value="cash" selected>Pilih Bank</option>
                                     @foreach (['BCA', 'BNI', 'BRI', 'BJB', 'BSI', 'BNC', 'CIMB', 'DBS', 'MANDIRI', 'PERMATA', 'SAHABAT_SAMPOERNA'] as $item)
                                         <option value="{{ $item }}">{{ $item }}</option>
                                     @endforeach
@@ -266,6 +274,5 @@
             </div>
         </aside>
     </div>
-
 
 </section>

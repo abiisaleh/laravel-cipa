@@ -13,7 +13,7 @@ class CreatePesanan extends Component
     public string $isi = '';
 
     public array $tabung = [];
-    public int $berat = 0;
+    public array $berat = [];
     public int $harga = 0;
     public int $qty = 1;
 
@@ -22,11 +22,30 @@ class CreatePesanan extends Component
 
     public function mount()
     {
-        $this->items = Pesanan::all();
-        $this->subtotal = Pesanan::all()->sum('subtotal');
+        $this->items = Pesanan::with('tabung')
+            ->whereNull('pembayaran_id')
+            ->where('user_id', auth()->id())
+            ->get();
+
+        $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
+
+        $this->items->each(function ($item) use (&$hargaOngkir) {
+            $this->ongkir += $item->tabung->berat * $hargaOngkir * $item->qty;
+        });
+
+        $this->subtotal = $this->items->sum('subtotal');
     }
 
     public function cekTabung()
+    {
+        $tabung = \App\Models\Tabung::where('jenis', $this->jenis)
+            ->get()
+            ->each(function ($item) {
+                $this->berat[$item->ukuran] = $item->berat;
+            });
+    }
+
+    public function cekUkuran()
     {
         $this->tabung = \App\Models\Tabung::where('jenis', $this->jenis)
             ->where('ukuran', $this->ukuran)

@@ -76,5 +76,10 @@ class DatabaseSeeder extends Seeder
         }
 
         DB::table('tabungs')->insert($data);
+
+        DB::table('settings')->insert([
+            'key' => 'ongkir',
+            'value' => '10000'
+        ]);
     }
 }
