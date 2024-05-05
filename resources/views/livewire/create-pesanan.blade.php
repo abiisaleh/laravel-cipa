@@ -134,7 +134,7 @@
                         <div class="w-full">
                             <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran</h3>
                             <div x-data="{ open: false }">
-                                <x-radio-list col="2">
+                                <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
                                     <div x-on:click="open = false">
                                         <x-radio-btn name="ukuran" value="cash">
                                             <div class="w-full">Cash</div>
@@ -145,7 +145,7 @@
                                             <div class="w-full">Transfer Bank</div>
                                         </x-radio-btn>
                                     </div>
-                                </x-radio-list>
+                                </ul>
 
                                 <select x-show="open"
                                     class="mt-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
@@ -215,7 +215,7 @@
                             <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran
                             </h3>
                             <div x-data="{ open: false }" class="text-xs md:text-md">
-                                <x-radio-list col="2">
+                                <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
                                     <div x-on:click="open = false">
                                         <x-radio-btn name="ukuran" value="cash">
                                             <div class="w-full">Cash</div>
@@ -226,7 +226,7 @@
                                             <div class="w-full">Transfer Bank</div>
                                         </x-radio-btn>
                                     </div>
-                                </x-radio-list>
+                                </ul>
 
                                 <select x-show="open"
                                     class="mt-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
