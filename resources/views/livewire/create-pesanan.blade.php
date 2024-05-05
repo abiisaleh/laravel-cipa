@@ -13,7 +13,7 @@
                         @csrf
                         <div class="md:flex justify-center">
                             <div class="w-full">
-                                <x-radio-list :col="['sm' => 2]">
+                                <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
                                     <x-radio-btn id="jenis-oksigen" name="jenis" value="oksigen">
                                         <h1 class="text-8xl w-full pb-4 font-bold">O₂</h1>
                                         <div class="text-sm w-full">Oksigen</div>
@@ -22,25 +22,26 @@
                                         <h1 class="text-8xl w-full pb-4 font-bold">N</h1>
                                         <div class="text-sm w-full">Nitrogen</div>
                                     </x-radio-btn>
-                                </x-radio-list>
+                                </ul>
 
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white mt-8">Ukuran</h3>
-                                <x-radio-list :col="['sm' => 3, 'md' => 3]">
+                                <ul class="grid w-full gap-2 md:gap-6 grid-cols-3 text-center">
                                     @foreach (['kecil', 'sedang', 'besar'] as $value)
                                         <div wire:click="cekTabung">
                                             <x-radio-btn id="ukuran-{{ $value }}" name="ukuran" :$value>
                                                 <div class="w-full">
-                                                    <h4 class="text-sm md:text-md font-semibold">{{ ucfirst($value) }}
+                                                    <h4 class="text-sm md:text-md font-semibold">
+                                                        {{ ucfirst($value) }}
                                                     </h4>
                                                     <p class="text-sm md:text-md">{{ number_format($berat) }} g</p>
                                                 </div>
                                             </x-radio-btn>
                                         </div>
                                     @endforeach
-                                </x-radio-list>
-
+                                </ul>
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white mt-8">Jenis</h3>
-                                <x-radio-list :col="['sm' => 3, 'md' => 3]">
+                                <ul class="grid w-full gap-2 md:gap-6 grid-cols-3 text-center">
+
                                     <div wire:click="cekHarga('full')">
                                         <x-radio-btn id="harga-full" name="harga"
                                             value="{{ $tabung['harga_full'] ?? 0 }}">
@@ -73,7 +74,8 @@
                                             </div>
                                         </x-radio-btn>
                                     </div>
-                                </x-radio-list>
+                                </ul>
+
 
                                 <div class="md:grid md:grid-cols-2 gap-4">
                                     <div class="">
