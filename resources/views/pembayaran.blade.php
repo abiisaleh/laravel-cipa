@@ -41,7 +41,8 @@
                         <div class="text-sm py-4">
                             <p>No. Rekening</p>
                             <div class="flex pb-4 items-center">
-                                <h3 class="text-lg text-primary-600 font-semibold me-4">896 0822 3820 4176</h3>
+                                <h3 class="text-lg text-primary-600 font-semibold me-4">{{ $va['account_number'] }}
+                                </h3>
                                 <button
                                     class="text-green-800 bg-green-100 hover:bg-green-200 text-xs font-semibold p-0.5 px-2.5 rounded "
                                     onclick="navigator.clipboard.writeText('Halo, ini adalah teks yang akan disalin!').then(alert('berhasil'))">Copy</button>

@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(App\Models\User::class)->nullable()->constrained()->cascadeOnDelete();
             $table->string('instansi');
-            $table->string('email');
-            $table->string('alamat');
-            $table->string('telp');
+            $table->string('email_kantor');
+            $table->string('alamat_kantor');
+            $table->string('telp_kantor');
+            $table->boolean('verified')->default(false);
             $table->timestamps();
         });
     }

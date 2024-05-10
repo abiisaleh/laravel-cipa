@@ -14,7 +14,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TabungResource extends Resource
@@ -22,8 +24,6 @@ class TabungResource extends Resource
     protected static ?string $model = Tabung::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-beaker';
-
-    protected static ?string $pluralLabel = 'Tabung';
 
     protected static ?int $navigationSort = 1;
 
@@ -36,17 +36,19 @@ class TabungResource extends Resource
                         'oksigen' => 'Oksigen',
                         'nitrogen' => 'Nitrogen'
                     ]
-                ),
+                )->disabled(auth()->user()->role != 'karyawan'),
                 Select::make('ukuran')->options(
                     [
                         'kecil' => 'Kecil',
                         'sedang' => 'Sedang',
                         'besar' => 'Besar'
                     ]
-                ),
-                TextInput::make('harga_full')->prefix('Rp. ')->numeric(),
-                TextInput::make('harga_refill')->prefix('Rp. ')->numeric(),
-                TextInput::make('harga_kosong')->prefix('Rp. ')->numeric(),
+                )->disabled(auth()->user()->role != 'karyawan'),
+                TextInput::make('harga_full')->prefix('Rp. ')->numeric()->disabled(auth()->user()->role != 'karyawan'),
+                TextInput::make('harga_refill')->prefix('Rp. ')->numeric()->disabled(auth()->user()->role != 'karyawan'),
+                TextInput::make('harga_kosong')->prefix('Rp. ')->numeric()->disabled(auth()->user()->role != 'karyawan'),
+
+                TextInput::make('stok')->numeric(),
             ]);
     }
 
@@ -89,5 +91,29 @@ class TabungResource extends Resource
             'create' => Pages\CreateTabung::route('/create'),
             'edit' => Pages\EditTabung::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (auth()->user()->role == 'karyawan')
+            return true;
+
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        if (auth()->user()->role == 'karyawan')
+            return true;
+
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        if (auth()->user()->role == 'karyawan')
+            return true;
+
+        return false;
     }
 }

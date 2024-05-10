@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->registration()
             ->profile()
+            ->emailVerification()
             ->passwordReset()
             ->colors([
                 'primary' => Color::Blue,
@@ -58,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                RedirectGuest::class,
+                // RedirectGuest::class,
             ]);
     }
 }

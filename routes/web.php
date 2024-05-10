@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Middleware\Authenticate;
+use App\Livewire\ListOrders;
+use App\Livewire\UserProfile;
+use App\Livewire\ViewOrder;
 use App\Models\Pembayaran;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,15 +24,17 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'index');
 
 Route::middleware([
-    Authenticate::class
+    Authenticate::class,
 ])->group(function () {
 
+    Route::prefix('profil')->group(function () {
+        Route::get('/', UserProfile::class);
+    });
+
     Route::prefix('order')->group(function () {
-        Route::view('/', 'pesanan.index');
+        Route::get('/', ListOrders::class);
         Route::get('/new', \App\Livewire\CreatePesanan::class);
-        Route::get('/{record}', function (\App\Models\Pesanan $record) {
-            return view('pesanan.view', ['item' => $record]);
-        });
+        Route::get('/{record}', ViewOrder::class);
     });
 
     Route::prefix('checkout')->group(function () {
@@ -47,43 +52,44 @@ Route::middleware([
             $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
 
             $pembayaran = \App\Models\Pembayaran::create([
-                'pelanggan_id' => null,
                 'metode' => $metode,
                 'subtotal' => $pesanan->sum('subtotal'),
                 'ongkir' => $totalBerat * $hargaOngkir,
             ]);
 
-            if ($metode != 'cash') {
+            $batasWaktu = Carbon::createFromDate()->addDays(30);
+
+            if ($metode != 'Cash') {
                 $createVA = Http::withHeader('content-type', 'application/json')
                     ->withBasicAuth(env('XENDIT_API_KEY'), '')
-                    ->post('https://api.xendit.co/callback_virtual_accounts')
-                    ->body([
-                        "external_id" => $pembayaran->id,
-                        "bank_code" => $metode,
+                    ->post('https://api.xendit.co/callback_virtual_accounts', [
+                        "external_id" => "$pembayaran->id",
+                        "bank_code" => str_replace(' ', '_', strtoupper($metode)),
                         "name" => auth()->user()->name,
                         "is_single_use" => true,
                         "is_closed" => true,
                         "expected_amount" => $pembayaran->subtotal,
                         "expiration_date" => now()->addHours(3),
-                    ]);
+                    ])->json();
 
                 $pembayaran->va_id = $createVA['id'];
                 $pembayaran->save();
+
+                $batasWaktu = Carbon::parse($createVA["expiration_date"]);
             }
 
-
-
             $pesanan->update(['pembayaran_id' => $pembayaran->id]);
-
-            $batasWaktu = Carbon::createFromDate()->addDays(30);
 
             return view('pembayaran', [
                 'item' => $pembayaran,
                 'date' => $batasWaktu->format('d M Y, H:m'),
-                'sisaWaktu' => $batasWaktu->diff(now())
+                'sisaWaktu' => $batasWaktu->diff(now()),
+                'va' => $createVA ?? null
             ]);
         });
-        Route::view('/selesai', 'checkout');
+        Route::get('/{record}', function (Pembayaran $record) {
+            return view('checkout', ['item' => $record]);
+        });
     });
 });
 
@@ -106,5 +112,6 @@ Route::post('/checkout/callback', function () {
 
     //     return response('Status berhasil diubah')->json();
     // }
+
     return response($data)->json();
 });

@@ -9,7 +9,7 @@
                     Butuh Tabung <br>
                     Oksigen & Nitrogen? </h1>
                 <p class="max-w-2xl mb-6 text-gray-500 lg:mb-8 md:text-lg lg:text-xl">
-                    Yuk, pesan sekarang di website kami! Cepat, gampang, dan bisa diandalkan.</p>
+                    Yuk, pesan sekarang di website kami! Cepat, mudah, dan bisa diandalkan.</p>
                 <div class="md:flex">
                     <a href="{{ filament()->getRegistrationUrl() }}"
                         class="w-full md:w-auto shadow-lg hover:shadow-none inline-flex items-center justify-center px-6 py-3 mr-3 text-base font-medium text-center text-white rounded-full bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300">

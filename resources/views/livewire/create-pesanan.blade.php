@@ -12,45 +12,67 @@
                     <form wire:submit="addToCart" class="w-full">
                         @csrf
                         <div class="md:flex justify-center">
-                            <div class="w-full">
+                            <div class="w-full" x-data="{ disable: true }">
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
-                                    <div wire:click="cekTabung">
-                                        <x-radio-btn id="jenis-oksigen" name="jenis" value="oksigen">
-                                            <h1 class="text-8xl w-full pb-4 font-bold">O₂</h1>
-                                            <div class="text-sm w-full">Oksigen</div>
-                                        </x-radio-btn>
+                                    <div wire:click="cekTabung" x-on:click="disable = true">
+                                        <li>
+                                            <input type="radio" id="jenis-oksigen" wire:model="jenis" name="jenis"
+                                                value="oksigen" class="hidden peer" required />
+                                            <label for="jenis-oksigen"
+                                                class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg peer-checked:text-primary-500 peer-checked:border-2 peer-checked:border-primary-600 hover:text-gray-600 hover:bg-gray-100 ">
+                                                <div class="block w-full">
+                                                    <h1 class="text-8xl w-full pb-4 font-bold">O₂</h1>
+                                                    <div class="text-sm w-full">Oksigen</div>
+                                                </div>
+                                            </label>
+                                        </li>
                                     </div>
 
-                                    <div wire:click="cekTabung">
-                                        <x-radio-btn id="jenis-nitrogen" name="jenis" value="nitrogen"
-                                            wire:click="cekTabung">
-                                            <h1 class="text-8xl w-full pb-4 font-bold">N</h1>
-                                            <div class="text-sm w-full">Nitrogen</div>
-                                        </x-radio-btn>
+                                    <div wire:click="cekTabung" x-on:click="disable = true">
+                                        <li>
+                                            <input type="radio" id="jenis-nitrogen" wire:model="jenis" name="jenis"
+                                                value="nitrogen" class="hidden peer" required />
+                                            <label for="jenis-nitrogen"
+                                                class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg peer-checked:text-primary-500 peer-checked:border-2 peer-checked:border-primary-600 hover:text-gray-600 hover:bg-gray-100 ">
+                                                <div class="block w-full">
+                                                    <h1 class="text-8xl w-full pb-4 font-bold">N</h1>
+                                                    <div class="text-sm w-full">Nitrogen</div>
+                                                </div>
+                                            </label>
+                                        </li>
                                     </div>
                                 </ul>
 
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white mt-8">Ukuran</h3>
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-3 text-center">
                                     @foreach (['kecil', 'sedang', 'besar'] as $value)
-                                        <div wire:click="cekUkuran">
-                                            <x-radio-btn id="ukuran-{{ $value }}" name="ukuran" :$value>
-                                                <div class="w-full">
-                                                    <h4 class="text-sm md:text-md font-semibold">
-                                                        {{ ucfirst($value) }}
-                                                    </h4>
-                                                    <p class="text-sm md:text-md">
-                                                        {{ number_format($berat[$value] ?? 0) }} g
-                                                    </p>
-                                                </div>
-                                            </x-radio-btn>
+                                        <div wire:click="cekUkuran" x-on:click="disable = true">
+                                            <li>
+                                                <input type="radio" id="ukuran-{{ $value }}"
+                                                    wire:model="ukuran" name="ukuran" value="{{ $value }}"
+                                                    class="hidden peer" required />
+                                                <label for="ukuran-{{ $value }}"
+                                                    class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg peer-checked:text-primary-500 peer-checked:border-2 peer-checked:border-primary-600 hover:text-gray-600 hover:bg-gray-100 ">
+                                                    <div class="block w-full">
+                                                        <h4 class="text-sm md:text-md font-semibold">
+                                                            {{ ucfirst($value) }}
+                                                        </h4>
+                                                        <p class="text-sm md:text-md">
+                                                            {{ number_format($berat[$value] ?? 0) }} g
+                                                        </p>
+                                                    </div>
+                                                </label>
+                                            </li>
+
                                         </div>
                                     @endforeach
                                 </ul>
+
+
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white mt-8">Jenis</h3>
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-3 text-center">
 
-                                    <div wire:click="cekHarga('full')">
+                                    <div wire:click="cekHarga('full')" x-on:click="disable = false">
                                         <x-radio-btn id="harga-full" name="harga"
                                             value="{{ $tabung['harga_full'] ?? 0 }}">
                                             <div class="w-full">
@@ -61,7 +83,7 @@
                                         </x-radio-btn>
                                     </div>
 
-                                    <div wire:click="cekHarga('kosong')">
+                                    <div wire:click="cekHarga('kosong')" x-on:click="disable = false">
                                         <x-radio-btn id="harga-kosong" name="harga"
                                             value="{{ $tabung['harga_kosong'] ?? 0 }}">
                                             <div class="w-kosong">
@@ -72,7 +94,7 @@
                                         </x-radio-btn>
                                     </div>
 
-                                    <div wire:click="cekHarga('refill')">
+                                    <div wire:click="cekHarga('refill')" x-on:click="disable = false">
                                         <x-radio-btn id="harga-refill" name="harga"
                                             value="{{ $tabung['harga_refill'] ?? 0 }}">
                                             <div class="w-refill">
@@ -83,7 +105,6 @@
                                         </x-radio-btn>
                                     </div>
                                 </ul>
-
 
                                 <div class="md:grid md:grid-cols-2 gap-4">
                                     <div class="">
@@ -114,10 +135,12 @@
 
                                 <div class="mt-12">
                                     <button type="submit"
-                                        class="block w-full p-5 text-primary-600 bg-white border border-primary-600 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                        class="block w-full p-5 text-primary-600 bg-white border border-primary-600 rounded-lg hover:bg-gray-100 cursor-pointer disabled:text-gray-500 disabled:border-gray-500 disabled:cursor-default"
+                                        x-bind:disabled="disable">
                                         Masukkan ke keranjang
                                     </button>
                                 </div>
+
                             </div>
                         </div>
                     </form>
@@ -157,8 +180,8 @@
 
                                 <select x-show="open" name="metode"
                                     class="mt-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                    <option value="cash" selected>Pilih Bank</option>
-                                    @foreach (['BCA', 'BNI', 'BRI', 'BJB', 'BSI', 'BNC', 'CIMB', 'DBS', 'MANDIRI', 'PERMATA', 'SAHABAT_SAMPOERNA'] as $item)
+                                    <option value="Cash" selected>Pilih Bank</option>
+                                    @foreach (['BCA', 'BNI', 'BRI', 'BJB', 'BSI', 'BNC', 'CIMB', 'DBS', 'Mandiri', 'Permata', 'Sahabat Sampoerna'] as $item)
                                         <option value="{{ $item }}">{{ $item }}</option>
                                     @endforeach
                                 </select>

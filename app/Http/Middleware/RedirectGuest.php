@@ -15,9 +15,16 @@ class RedirectGuest
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!in_array(url()->current(), [filament()->getLogoutUrl(), filament()->getProfileUrl()]))
+        if (!in_array(url()->current(), [
+            filament()->getLogoutUrl(),
+            filament()->getProfileUrl(),
+            filament()->getVerifyEmailUrl(
+                auth()->user()
+            ),
+            filament()->getEmailVerificationPromptUrl()
+        ]))
             if (auth()->user()->role == 'pelanggan')
-                return redirect(route('pesan'));
+                return redirect(url('order/new'));
 
         return $next($request);
     }

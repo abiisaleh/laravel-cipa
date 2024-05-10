@@ -3,14 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PelangganResource\Pages;
-use App\Filament\Resources\PelangganResource\RelationManagers;
 use App\Models\Pelanggan;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Split;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PelangganResource extends Resource
@@ -19,27 +26,19 @@ class PelangganResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $pluralLabel = 'Pelanggan';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('instansi')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('alamat')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('telp')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
+                Section::make([
+                    TextInput::make('instansi')->disabled(),
+                    TextInput::make('alamat_kantor')->disabled(),
+                    TextInput::make('telp_kantor')->disabled(),
+                    TextInput::make('email_kantor')->disabled(),
+                    Toggle::make('verified')->label('Data yang dimasukkan sudah benar'),
+                ])
             ]);
     }
 
@@ -47,30 +46,17 @@ class PelangganResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.email')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('instansi')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('alamat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('telp')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('instansi'),
+                TextColumn::make('alamat_kantor'),
+                TextColumn::make('telp_kantor'),
+                TextColumn::make('email_kantor'),
+                IconColumn::make('verified')->boolean(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -79,10 +65,43 @@ class PelangganResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePelanggans::route('/'),
+            'index' => Pages\ListPelanggans::route('/'),
+            'create' => Pages\CreatePelanggan::route('/create'),
+            'edit' => Pages\EditPelanggan::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        if (auth()->user()->role == 'karyawan')
+            return true;
+
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        if (auth()->user()->role == 'karyawan')
+            return true;
+
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        if (auth()->user()->role == 'karyawan')
+            return true;
+
+        return false;
     }
 }

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tabung extends Model
 {
@@ -27,20 +26,5 @@ class Tabung extends Model
             get: fn ($value) => $jenis[$this->jenis] . $ukuran[$this->ukuran],
             set: fn (string $value) => $jenis[$this->jenis] . $ukuran[$this->ukuran],
         );
-    }
-
-    public function setKodeAttribute()
-    {
-        $jenis = [
-            'oksigen' => '6',
-            'nitrogen' => '7'
-        ];
-        $ukuran = [
-            'kecil' => '200',
-            'sedang' => '300',
-            'besar' => '400'
-        ];
-
-        $this->attributes['kode'] = $jenis[$this->jenis] . $ukuran[$this->ukuran];
     }
 }

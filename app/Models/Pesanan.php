@@ -15,6 +15,16 @@ class Pesanan extends Model
         return $this->belongsTo(Tabung::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function pembayaran(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function getNamaAttribute($value)
     {
         return ucfirst($value);

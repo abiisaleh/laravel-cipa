@@ -18,19 +18,16 @@
 
                         <!-- Dropdown menu -->
                         <div id="dropdownAvatarName"
-                            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 me-80 !-inset-x-8">
-                            <div class="px-4 py-3 text-sm text-gray-900">
-                                <div class="font-medium ">{{ ucfirst(auth()->user()->role) }}</div>
-                                <div class="truncate">{{ auth()->user()->email }}</div>
-                            </div>
+                            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 me-80 md:!-inset-x-8">
                             <ul class="py-2 text-sm text-gray-700 "
                                 aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
                                 <li>
-                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 ">Profile</a>
+                                    <a href="{{ url('/profil') }}"
+                                        class="block px-4 py-2 hover:bg-gray-100 items-center">Profil</a>
                                 </li>
 
                                 <li>
-                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 ">Pesanan</a>
+                                    <a href="{{ url('/order') }}" class="block px-4 py-2 hover:bg-gray-100 ">Pesanan</a>
                                 </li>
 
                                 <li>
