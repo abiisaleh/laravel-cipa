@@ -59,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                // RedirectGuest::class,
+                RedirectGuest::class,
             ]);
     }
 }
