@@ -166,7 +166,7 @@
                         @endforelse
                     </div>
 
-                    <form action="{{ url('/checkout/new') }}">
+                    <form method="POST" action="{{ url('/checkout/new') }}">
                         @csrf
                         <div class="w-full">
                             <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran</h3>
@@ -252,7 +252,7 @@
                             @endforelse
                         </div>
 
-                        <form action="{{ url('/checkout/new') }}">
+                        <form method="POST" action="{{ url('/checkout/new') }}">
                             @csrf
                             <div class="w-full">
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran
