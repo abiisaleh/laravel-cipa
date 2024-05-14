@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Order;
 
 use App\Models\Pembayaran;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -8,12 +8,12 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Table;
 use Livewire\Component;
 
-class ListOrders extends Component implements HasForms, HasTable
+class ListOrder extends Component implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
@@ -33,6 +33,9 @@ class ListOrders extends Component implements HasForms, HasTable
 
                 if ($this->activeTab === 'selesai')
                     $query->whereNot('tgl_lunas', null)->whereNot('tgl_diterima', null);
+
+                if ($this->activeTab === 'batal')
+                    $query->withTrashed()->onlyTrashed();
 
                 return $query;
             })
@@ -56,9 +59,8 @@ class ListOrders extends Component implements HasForms, HasTable
                 // ...
             ]);
     }
-
     public function render()
     {
-        return view('livewire.list-orders');
+        return view('livewire.order.list-order');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tabung extends Model
 {
@@ -23,8 +24,13 @@ class Tabung extends Model
         ];
 
         return Attribute::make(
-            get: fn ($value) => $jenis[$this->jenis] . $ukuran[$this->ukuran],
-            set: fn (string $value) => $jenis[$this->jenis] . $ukuran[$this->ukuran],
+            get: fn () => $jenis[$this->jenis] . $ukuran[$this->ukuran],
+            set: fn () => $jenis[$this->jenis] . $ukuran[$this->ukuran],
         );
+    }
+
+    public function pesanan(): HasMany
+    {
+        return $this->hasMany(Pesanan::class);
     }
 }

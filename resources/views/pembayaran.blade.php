@@ -13,8 +13,13 @@
                 <div class="flex justify-between py-4 border-b-2 items-center">
                     <p>Bayar Dalam</p>
                     <div class="text-right">
-                        <p class="text-primary-600 font-semibold">{{ $sisaWaktu->days }} Hari {{ $sisaWaktu->h }} Jam
-                            {{ $sisaWaktu->i }} Menit</p>
+                        @if ($sisaWaktu == 0)
+                            <p class="text-danger-600 font-semibold">0 Hari 0 Jam 0 Menit</p>
+                        @else
+                            <p class="text-primary-600 font-semibold">{{ $sisaWaktu->days }} Hari {{ $sisaWaktu->h }}
+                                Jam
+                                {{ $sisaWaktu->i }} Menit</p>
+                        @endif
                         <small class=" text-gray-500">Jatuh tempo {{ $date }}</small>
                     </div>
                 </div>

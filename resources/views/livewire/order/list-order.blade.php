@@ -27,6 +27,12 @@
                     === 'selesai'" wire:click="$set('activeTab', 'selesai')">
                     Selesai
                 </x-filament::tabs.item>
+
+                <x-filament::tabs.item :active="$activeTab
+                    === 'batal'" wire:click="$set('activeTab', 'batal')">
+                    Batal
+                </x-filament::tabs.item>
+
             </x-filament::tabs>
         </div>
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\DatabaseNotification;
 use App\Livewire\ListOrders;
 use App\Livewire\UserProfile;
 use App\Livewire\ViewOrder;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Filament\Notifications\Notification;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,43 +23,57 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'index');
+Route::view('/', 'index')->middleware(DatabaseNotification::class);
 
 Route::middleware([
     Authenticate::class,
+    DatabaseNotification::class,
 ])->group(function () {
-
     Route::prefix('profil')->group(function () {
         Route::get('/', UserProfile::class);
     });
 
     Route::prefix('order')->group(function () {
-        Route::get('/', ListOrders::class);
-        Route::get('/new', \App\Livewire\CreatePesanan::class);
-        Route::get('/{record}', ViewOrder::class);
+        Route::get('/', \App\Livewire\Order\ListOrder::class);
+        Route::get('/new', \App\Livewire\Order\CreateOrder::class);
+        Route::get('/{id}', \App\Livewire\Order\ViewOrder::class);
     });
 
     Route::prefix('checkout')->group(function () {
-        Route::get('/new', function (Request $request) {
-            $metode = $request->get('metode');
-
-            //total semua berat
+        Route::post('/new', function (Request $request) {
+            $metode = $request->post('metode');
+            $totalBerat = 0;
+            $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
             $pesanan = \App\Models\Pesanan::with('tabung')->whereNull('pembayaran_id');
 
-            $totalBerat = 0;
+            //cek stok tiap pesanan selain refill
+            foreach ($pesanan->get() as $item) {
+                if (!strpos($item->nama, 'refill'))
+                    if ($item->tabung->stok < $item->qty) {
+                        // kalau ada stok yang kurang tampilkan error
+                        return view('checkout-error');
+                    }
+            }
+
+            //kurangi stok tiap pesanan
             $pesanan->get()->each(function ($item) use (&$totalBerat) {
+                //total semua berat
                 $totalBerat += $item->tabung->berat;
+
+                //cek stok selain refill
+                if (!strpos($item->nama, 'refill')) {
+                    $tabung = \App\Models\Tabung::find($item->tabung->id);
+                    $tabung->stok -= $item->qty;
+                    $tabung->save();
+                }
             });
 
-            $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
 
             $pembayaran = \App\Models\Pembayaran::create([
                 'metode' => $metode,
                 'subtotal' => $pesanan->sum('subtotal'),
                 'ongkir' => $totalBerat * $hargaOngkir,
             ]);
-
-            $batasWaktu = Carbon::createFromDate()->addDays(30);
 
             if ($metode != 'Cash') {
                 $createVA = Http::withHeader('content-type', 'application/json')
@@ -69,25 +85,43 @@ Route::middleware([
                         "is_single_use" => true,
                         "is_closed" => true,
                         "expected_amount" => $pembayaran->subtotal,
-                        "expiration_date" => now()->addHours(3),
+                        "expiration_date" => now()->addDay(),
                     ])->json();
 
                 $pembayaran->va_id = $createVA['id'];
                 $pembayaran->save();
-
-                $batasWaktu = Carbon::parse($createVA["expiration_date"]);
             }
 
             $pesanan->update(['pembayaran_id' => $pembayaran->id]);
 
+            redirect(url('checkout', $pembayaran->id));
+        });
+
+        Route::get('/{record}', function (Pembayaran $record) {
+            $batasWaktu = Carbon::createFromDate()->addDays(30);
+
+            if (!$record->motode == 'cash') {
+                $getVA = Http::withHeader('content-type', 'application/json')
+                    ->withBasicAuth(env('XENDIT_API_KEY'), '')
+                    ->get('https://api.xendit.co/callback_virtual_accounts/' . $record->va_id)->json();
+
+                $batasWaktu = Carbon::parse($getVA["expiration_date"]);
+            }
+
+            $sisaWaktu = 0;
+
+            if (!now()->greaterThan($batasWaktu))
+                $sisaWaktu = $batasWaktu->diff(now());
+
             return view('pembayaran', [
-                'item' => $pembayaran,
+                'item' => $record,
                 'date' => $batasWaktu->format('d M Y, H:m'),
-                'sisaWaktu' => $batasWaktu->diff(now()),
-                'va' => $createVA ?? null
+                'sisaWaktu' => $sisaWaktu,
+                'va' => $getVA ?? null
             ]);
         });
-        Route::get('/{record}', function (Pembayaran $record) {
+
+        Route::get('/print/{record}', function (Pembayaran $record) {
             return view('checkout', ['item' => $record]);
         });
     });
@@ -98,20 +132,30 @@ Route::post('/checkout/callback', function () {
     $data = request()->all()['data'];
     $id = $data['reference_id'];
 
+    $item = Pembayaran::find($id);
+
+    if (is_null($item))
+        return response('Data tidak ditemukan')->json();
+
+    if ($data['status'] != 'SUCCEEDED') {
+        // kirim notifikasi ke user
+        Notification::make()
+            ->title('Pembayaran gagal')
+            ->body('Waktu Pesanan #' . $item->id . ' telah berakhir. Harap melakukan checkout ulang untuk melakukan pembayaran ulang')
+            ->sendToDatabase($item->pesanan->first()->user);
+
+        return response('Pembayaran gagal')->json();
+    }
+
     //ubah status jadi lunas
+    $item->tgl_lunas = now();
+    $item->save();
 
-    // if ($data['status'] == 'SUCCEEDED') {
-    //     $booking = Booking::find($id);
+    // kirim notifikasi ke user
+    Notification::make()
+        ->title('Pembayaran berhasil')
+        ->body('Pesanan #' . $item->id . ' dengan total ' . $item->total . ' telah berhasil di bayar.')
+        ->sendToDatabase($item->pesanan->first()->user);
 
-    //     if (is_null($booking)) {
-    //         return response('Data tidak ditemukan')->json();
-    //     }
-
-    //     $booking->lunas = 1;
-    //     $booking->save();
-
-    //     return response('Status berhasil diubah')->json();
-    // }
-
-    return response($data)->json();
+    return response('Status berhasil diubah')->json();
 });

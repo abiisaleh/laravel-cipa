@@ -14,7 +14,7 @@
                 </div>
                 <div class="">
                     <span
-                        class="text-xs font-semibold py-0.5 px-2.5 rounded {{ auth()->user()->pelanggan->verified ? 'text-danger-800 bg-danger-100 cursor-pointer' : 'text-success-800 bg-success-100' }}">
+                        class="text-xs font-semibold py-0.5 px-2.5 rounded {{ auth()->user()->pelanggan->verified ? 'text-danger-800 bg-danger-100' : 'text-success-800 bg-success-100' }}">
                         {{ auth()->user()->pelanggan->verified ? 'not verified' : 'verified' }}
                     </span>
                 </div>

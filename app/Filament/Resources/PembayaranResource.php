@@ -8,8 +8,10 @@ use App\Models\Pembayaran;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,10 +36,10 @@ class PembayaranResource extends Resource
                         Forms\Components\Placeholder::make('dibuat')
                             ->content(fn (Pembayaran $record): string => $record->created_at->toFormattedDateString()),
                         Forms\Components\Placeholder::make('dibayar')
-                            ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_lunas->toFormattedDateString() : 'xxx')
+                            ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_lunas : 'xxx')
                             ->hidden(fn (Pembayaran $record) => $record->lunas),
                         Forms\Components\Placeholder::make('diterima')
-                            ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_diterima->toFormattedDateString() : 'xxx')
+                            ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_diterima : 'xxx')
                             ->hidden(fn (Pembayaran $record) => $record->diantar),
 
                         Forms\Components\Placeholder::make('instansi')
@@ -79,9 +81,40 @@ class PembayaranResource extends Resource
                     ->prefix('Rp ')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('lunas')
-                    ->boolean(),
+                    ->boolean()
+                    ->hidden(auth()->user()->role == 'karyawan'),
                 Tables\Columns\IconColumn::make('diterima')
-                    ->boolean(),
+                    ->boolean()
+                    ->hidden(auth()->user()->role == 'karyawan'),
+                ToggleColumn::make('lunas')
+                    ->afterStateUpdated(function ($record, $state) {
+                        $record->tgl_lunas = null;
+
+                        if ($state)
+                            $record->tgl_lunas = now();
+
+                        $record->save();
+
+                        Notification::make()
+                            ->title('Success')
+                            ->success()
+                            ->send();
+                    }),
+
+                ToggleColumn::make('diterima')
+                    ->afterStateUpdated(function ($record, $state) {
+                        $record->tgl_diterima = null;
+
+                        if ($state)
+                            $record->tgl_diterima = now();
+
+                        $record->save();
+
+                        Notification::make()
+                            ->title('Success')
+                            ->success()
+                            ->send();
+                    })
             ])
             ->filters([
                 //
@@ -90,9 +123,9 @@ class PembayaranResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -114,25 +147,16 @@ class PembayaranResource extends Resource
 
     public static function canCreate(): bool
     {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
         return false;
     }
 
     public static function canDelete(Model $record): bool
     {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
         return false;
     }
 
     public static function canDeleteAny(): bool
     {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
         return false;
     }
 }

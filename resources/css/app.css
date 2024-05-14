@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#btn-timeline>.fi-btn {
+    display: flex;
+    width: 100%;
+}

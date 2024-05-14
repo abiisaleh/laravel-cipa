@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('diterima')->default(false);
             $table->dateTime('tgl_diterima')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

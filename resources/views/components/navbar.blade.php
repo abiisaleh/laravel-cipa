@@ -9,11 +9,15 @@
                 <div>
                     @if (auth()->check())
                         <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName"
-                            class="flex items-center text-sm font-medium text-gray-900 rounded-full hover:text-blue-600  md:me-0 focus:ring-4 focus:ring-gray-100 "
+                            class="relative flex items-center text-sm font-medium text-gray-900 rounded-full hover:text-blue-600  md:me-0 focus:ring-4 focus:ring-gray-100 "
                             type="button">
                             <span class="sr-only">Open user menu</span>
                             <img class="w-9 h-9 rounded-full" src="{{ filament()->getUserAvatarUrl(auth()->user()) }}"
                                 alt="user photo">
+                            @if ($notificationCount > 0)
+                                <span
+                                    class="bg-red-600 w-2 h-2 rounded-full absolute top-0 right-0 animate-pulse"></span>
+                            @endif
                         </button>
 
                         <!-- Dropdown menu -->
@@ -31,7 +35,17 @@
                                 </li>
 
                                 <li>
-                                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 ">Notifikasi</a>
+                                    <button x-data="{}"
+                                        class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 w-full text-left"
+                                        x-on:click="$dispatch('open-modal', { id: 'database-notifications' })"
+                                        type="button">
+                                        Notifications
+                                        @if ($notificationCount > 0)
+                                            <span
+                                                class="bg-red-600 rounded text-xs px-1 text-white">{{ $notificationCount }}
+                                                new</span>
+                                        @endif
+                                    </button>
                                 </li>
                             </ul>
                             <div class="py-2">

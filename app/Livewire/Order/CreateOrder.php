@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Order;
 
 use App\Models\Pesanan;
 use Livewire\Component;
 
-class CreatePesanan extends Component
+class CreateOrder extends Component
 {
     public $items = [];
     public string $jenis = '';
@@ -16,18 +16,27 @@ class CreatePesanan extends Component
     public array $berat = [];
     public int $harga = 0;
     public int $qty = 1;
+    public int $stok = 0;
 
     public int $subtotal = 0;
-    public int $ongkir = 0;
+    public int $ongkir;
+
+    public int $countItems = 0;
 
     public function mount()
     {
-        $this->items = Pesanan::with('tabung')
+        $this->items = \App\Models\Pesanan::with('tabung')
             ->whereNull('pembayaran_id')
             ->where('user_id', auth()->id())
             ->get();
 
+        $this->countItems = Pesanan::with('tabung')
+            ->whereNull('pembayaran_id')
+            ->where('user_id', auth()->id())->count();
+
         $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
+
+        $this->ongkir = 0;
 
         $this->items->each(function ($item) use (&$hargaOngkir) {
             $this->ongkir += $item->tabung->berat * $hargaOngkir * $item->qty;
@@ -57,16 +66,19 @@ class CreatePesanan extends Component
     {
         $this->isi = $isi;
         $this->harga;
+        $this->stok = $this->tabung['stok'];
     }
 
     public function increment()
     {
-        $this->qty++;
+        if ($this->stok > $this->qty)
+            $this->qty++;
     }
 
     public function decrement()
     {
-        $this->qty--;
+        if ($this->qty > 0)
+            $this->qty--;
     }
 
     public function addToCart()
@@ -82,12 +94,23 @@ class CreatePesanan extends Component
             $this->isi
         ]);
 
-        $pesanan = Pesanan::where('nama', $namaTabung)
+        $pesanan = \App\Models\Pesanan::where('nama', $namaTabung)
             ->where('pembayaran_id', null)
             ->first();
 
+        //cek stok pesanan selain refill
+        if ($this->isi != 'refill')
+            if ($tabung->stok < $this->qty) {
+                // kalau ada stok yang kurang tampilkan error
+                return \Filament\Notifications\Notification::make()
+                    ->title('Stok tidak cukup')
+                    ->body('sisa tabung tersedia ' . $tabung->stok)
+                    ->danger()
+                    ->send();
+            }
+
         if ($pesanan === null) {
-            Pesanan::create([
+            \App\Models\Pesanan::create([
                 'user_id' => auth()->id(),
                 'tabung_id' => $tabung->id,
                 'nama' => $namaTabung,
@@ -108,7 +131,7 @@ class CreatePesanan extends Component
         $this->mount();
     }
 
-    public function delete(Pesanan $record)
+    public function delete(\App\Models\Pesanan $record)
     {
         $record->delete();
 
@@ -123,6 +146,6 @@ class CreatePesanan extends Component
 
     public function render()
     {
-        return view('livewire.create-pesanan');
+        return view('livewire.order.create-order');
     }
 }

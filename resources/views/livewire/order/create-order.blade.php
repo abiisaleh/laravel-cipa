@@ -123,6 +123,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <small class="text-danger-600">sisa stok {{ $stok }}</small>
                                     </div>
 
                                     <div class="flex items-center justify-between md:pt-16">
@@ -140,7 +141,6 @@
                                         Masukkan ke keranjang
                                     </button>
                                 </div>
-
                             </div>
                         </div>
                     </form>
@@ -151,9 +151,15 @@
                 <div class="bg-gray-50 rounded p-4">
                     <div class="w-full grow">
                         <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Keranjang</h3>
-                        @forelse ($items as $pesanan)
-                            <div wire:key="{{ $pesanan->id }}">
-                                <x-pesanan-list :$pesanan />
+                        @forelse ($items as $item)
+                            <div wire:key="{{ $item->id }}" class="relative">
+                                <x-pesanan-list :pesanan="$item" />
+
+                                @if ($item->tabung->stok < $item->qty)
+                                    <small class="absolute -bottom-4 text-danger-600">sisa stok
+                                        {{ $item->tabung->stok }}</small>
+                                @endif
+
                             </div>
                         @empty
                             <p class="p-5 rounded-md text-center text-gray-500 mb-4">- Kosong -</p>
@@ -216,83 +222,90 @@
             </div>
         </div>
 
-        {{-- cart btn --}}
-        <button
-            class="md:hidden  fixed bottom-10 end-5 bg-primary-600 p-4 text-white rounded-full shadow-xl hover:shadow-none hover:bg-primary-800"
-            x-on:click="open = !open">
-            @svg('heroicon-o-shopping-cart', ['class' => 'w-6 h-6', ':class' => 'open ? "hidden" : ""'])
-            @svg('heroicon-o-x-mark', ['class' => 'w-6 h-6', ':class' => 'open ? "" : "hidden"'])
+        {{-- keranjang --}}
+        <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar"
+            aria-controls="default-sidebar" type="button"
+            class="md:hidden fixed bottom-10 end-5 bg-primary-600 p-4 text-white rounded-full shadow-xl hover:shadow-none hover:bg-primary-800">
+            <span class="sr-only">Open cart</span>
+            @svg('heroicon-o-shopping-cart', ['class' => 'w-6 h-6'])
+            @if ($countItems > 0)
+                <span
+                    class="absolute top-0 right-0 rounded-full bg-danger-600 text-xs w-4 h-4 text-center">{{ $countItems }}</span>
+            @endif
         </button>
 
-        <aside id="sidebar"
-            class="md:hidden bg-gray-50 w-3/4 space-y-6 pt-6 px-0 fixed inset-y-0 left-0 transform transition duration-200 ease-in-out overflow-x-auto"
-            :class="open ? 'translate-x-0' : '-translate-x-full'">
-            <div class="flex flex-col space-y-6">
-                <div class="rounded p-4">
-                    <div class="w-full grow">
-                        <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Keranjang</h3>
-                        @forelse ($items as $pesanan)
-                            <div wire:key="{{ $pesanan->id }}">
-                                <x-pesanan-list :$pesanan />
-                            </div>
-                        @empty
-                            <p class="p-5 rounded-md text-center text-gray-500 mb-4">- Kosong -</p>
-                        @endforelse
-                    </div>
-
-                    <form action="{{ url('/checkout/new') }}">
-                        @csrf
-                        <div class="w-full">
-                            <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran
-                            </h3>
-                            <div x-data="{ open: false }" class="text-xs md:text-md">
-                                <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
-                                    <div x-on:click="open = false">
-                                        <x-radio-btn name="ukuran" value="cash">
-                                            <div class="w-full">Cash</div>
-                                        </x-radio-btn>
-                                    </div>
-                                    <div x-on:click="open = true">
-                                        <x-radio-btn name="ukuran" value="transfer">
-                                            <div class="w-full">Transfer Bank</div>
-                                        </x-radio-btn>
-                                    </div>
-                                </ul>
-
-                                <select x-show="open"
-                                    class="mt-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-                                    <option selected>Pilih Bank</option>
-                                    @foreach (['BCA', 'BNI', 'BRI', 'BJB', 'BSI', 'BNC', 'CIMB', 'DBS', 'MANDIRI', 'PERMATA', 'SAHABAT_SAMPOERNA'] as $item)
-                                        <option value="{{ $item }}">{{ $item }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mt-12 text-sm md:text-md">
-                                <div class="flex justify-between items-center mb-4">
-                                    <p class="text-gray-500">Subtotal untuk produk</p>
-                                    <p class="">Rp {{ number_format($subtotal) }}</p>
+        <aside id="default-sidebar"
+            class="fixed top-0 left-0 z-40 w-4/5 h-screen transition-transform -translate-x-full sm:translate-x-0 sm:hidden"
+            aria-label="Sidenav">
+            <div
+                class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex flex-col space-y-6">
+                    <div class="rounded p-4">
+                        <div class="w-full grow">
+                            <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Keranjang</h3>
+                            @forelse ($items as $pesanan)
+                                <div wire:key="{{ $pesanan->id }}">
+                                    <x-pesanan-list :$pesanan />
                                 </div>
-
-                                <div class="flex justify-between items-center mb-4">
-                                    <p class="text-gray-500">Ongkos Kirim</p>
-                                    <p class="">Rp {{ number_format($ongkir) }}</p>
-                                </div>
-
-                                <div class="flex justify-between items-center mb-4">
-                                    <p class="text-gray-500">Total Pembayaran</p>
-                                    <p class="text-primary-600 text-xl md:text-2xl font-semibold">Rp
-                                        {{ number_format($subtotal + $ongkir) }}
-                                    </p>
-                                </div>
-
-                                <button type="submit" {{ $items->isEmpty() ? 'disabled' : '' }}
-                                    class="block bg-primary-600 w-full p-5 text-white border border-gray-200 rounded-lg  hover:text-gray-200 hover:bg-primary-800 {{ $items->isEmpty() ? 'disabled:bg-gray-100 disabled:text-gray-500' : '' }}">Buat
-                                    Pesanan</button>
-                            </div>
+                            @empty
+                                <p class="p-5 rounded-md text-center text-gray-500 mb-4">- Kosong -</p>
+                            @endforelse
                         </div>
-                    </form>
 
+                        <form action="{{ url('/checkout/new') }}">
+                            @csrf
+                            <div class="w-full">
+                                <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran
+                                </h3>
+                                <div x-data="{ open: false }">
+                                    <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
+                                        <div x-on:click="open = false">
+                                            <x-radio-btn name="jenis-pembayaran" value="cash" id="cart-cash">
+                                                <div class="w-full">Cash</div>
+                                            </x-radio-btn>
+                                        </div>
+                                        <div x-on:click="open = true">
+                                            <x-radio-btn name="jenis-pembayaran" value="transfer" id="cart-transfer">
+                                                <div class="w-full">Transfer Bank</div>
+                                            </x-radio-btn>
+                                        </div>
+                                    </ul>
+
+                                    <select x-show="open" name="metode"
+                                        class="mt-4 bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                                        <option value="Cash" selected>Pilih Bank</option>
+                                        @foreach (['BCA', 'BNI', 'BRI', 'BJB', 'BSI', 'BNC', 'CIMB', 'DBS', 'Mandiri', 'Permata', 'Sahabat Sampoerna'] as $item)
+                                            <option value="{{ $item }}">{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mt-12">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <p class="text-gray-500">Subtotal untuk produk</p>
+                                        <p class="">Rp {{ number_format($subtotal) }}</p>
+                                    </div>
+
+                                    <div class="flex justify-between items-center mb-4">
+                                        <p class="text-gray-500">Ongkos Kirim</p>
+                                        <p class="">Rp {{ number_format($ongkir) }}</p>
+                                    </div>
+
+                                    <div class="flex justify-between items-center mb-4">
+                                        <p class="text-gray-500">Total Pembayaran</p>
+                                        <p class="text-primary-600 text-2xl font-semibold">Rp
+                                            {{ number_format($subtotal + $ongkir) }}
+                                        </p>
+                                    </div>
+
+                                    <button type="submit" {{ $items->isEmpty() ? 'disabled' : '' }}
+                                        class="block bg-primary-600 w-full p-5 text-white border border-gray-200 rounded-lg  hover:text-gray-200 hover:bg-primary-800 {{ $items->isEmpty() ? 'disabled:bg-gray-100 disabled:text-gray-500' : '' }}">Buat
+                                        Pesanan</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
                 </div>
             </div>
         </aside>
