@@ -29,6 +29,13 @@ class Tabung extends Model
         );
     }
 
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => ucfirst(implode(' ', [$this->jenis, $this->ukuran,])),
+        );
+    }
+
     public function pesanan(): HasMany
     {
         return $this->hasMany(Pesanan::class);

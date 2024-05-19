@@ -20,17 +20,15 @@
                 <hr class="border-dashed border-2">
 
                 <x-list key='Dikirm Tanggal' value='{{ $item->tgl_lunas ?? now() }}' />
-                {{-- <x-list key='Metode Pembayaran'
-                    value='{{ $item->metode != 'cash' ? 'Bank ' . $item->metode ?? '' : '' }}' /> --}}
 
                 <x-list key='Subtotal Produk' value='Rp {{ number_format($item->subtotal ?? 0) }}' />
                 <x-list key='Ongkos Pengiriman' value='Rp {{ number_format($item->ongkir ?? 0) }}' />
                 <x-list key='Total Pembayaran' value='Rp {{ number_format($item->total ?? 0) }}' />
 
                 <div class="flex">
-                    <button
+                    <a href="print"
                         class="mx-4 py-2 px-4 bg-primary-600 rounded hover:bg-primary-800 w-full mt-8 mb-4 text-white">Download
-                        Nota</button>
+                        Nota</a>
                 </div>
 
             </div>

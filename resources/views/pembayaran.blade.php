@@ -3,7 +3,7 @@
         <div class="py-12 px-4 mx-auto max-w-screen-xl text-left min-h-[78vh]">
             <div class="md:w-1/2 mx-auto">
 
-                <img class="mx-auto py-4" src="/img/money.webp" alt="" width="200">
+                <img class="mx-auto py-4" src="/img/money.webp" alt="animasi uang" width="200">
 
                 <div class="flex justify-between py-4 border-b-2 items-center">
                     <p>Total Pembayaran</p>
@@ -13,14 +13,14 @@
                 <div class="flex justify-between py-4 border-b-2 items-center">
                     <p>Bayar Dalam</p>
                     <div class="text-right">
-                        @if ($sisaWaktu == 0)
-                            <p class="text-danger-600 font-semibold">0 Hari 0 Jam 0 Menit</p>
-                        @else
-                            <p class="text-primary-600 font-semibold">{{ $sisaWaktu->days }} Hari {{ $sisaWaktu->h }}
-                                Jam
-                                {{ $sisaWaktu->i }} Menit</p>
-                        @endif
-                        <small class=" text-gray-500">Jatuh tempo {{ $date }}</small>
+                        <x-countdown :expires="$date" class="text-primary-600 font-semibold">
+                            <span>{{ $component->days() == '00' ? '' : $component->days() . ' hari' }}</span>
+                            <span x-text="timer.hours"></span> jam
+                            <span x-text="timer.minutes"></span> menit
+                            <span x-text="timer.seconds"></span> detik
+                        </x-countdown>
+
+                        <small class=" text-gray-500">Jatuh tempo {{ $date->format('d M Y, H:m') }}</small>
                     </div>
                 </div>
 
@@ -50,12 +50,20 @@
                                 </h3>
                                 <button
                                     class="text-green-800 bg-green-100 hover:bg-green-200 text-xs font-semibold p-0.5 px-2.5 rounded "
-                                    onclick="navigator.clipboard.writeText('Halo, ini adalah teks yang akan disalin!').then(alert('berhasil'))">Copy</button>
+                                    onclick="navigator.clipboard.writeText('{{ $va['account_number'] }}').then(alert('disalin'))">Salin</button>
                             </div>
                             <p class="pb-4 text-green-600">Proses verifikasi kurang dari 10 menit setelah pembayaran</p>
                             <p class="pb-4">Bayar pesanan ke Virtual Account di atas sebelum membuat pesanan kembali
                                 dengan nomor Virtual Account yang sama.</p>
                             <p>Hanya menerima Bank {{ ucfirst($item->metode) }}</p>
+
+                            <p class="text-center bg-info-50 p-2 mt-8">
+                                Untuk mensimulasikan pembayaran klik
+                                <a href="{{ url('checkout/' . $item->id . '/simulasi') }}"
+                                    class="text-sm font-semibold text-primary-600 hover:underline">💳
+                                    Bayar
+                                    sekarang.</a>
+                            </p>
                     @endif
 
                 </div>
