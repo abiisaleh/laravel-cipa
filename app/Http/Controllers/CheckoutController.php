@@ -106,7 +106,8 @@ class CheckoutController extends Controller
     public function updateStats()
     {
         $data = request()->all();
-        dd($data);
+        return $data;
+
         $id = $data['reference_id'];
 
         $item = Pembayaran::find($id);
