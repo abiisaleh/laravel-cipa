@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
 use Carbon\Carbon;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -96,7 +97,7 @@ class CheckoutController extends Controller
     {
         Http::withHeader('content-type', 'application/json')
             ->withBasicAuth(env('XENDIT_API_KEY'), '')
-            ->post('https://api.xendit.co/callback_virtual_accounts/external_id=' . $record->va_id . '/simulate_payment', [
+            ->post('https://api.xendit.co/callback_virtual_accounts/external_id=' . $record->id . '/simulate_payment', [
                 "amount" => $record->subtotal,
             ])->json();
 
@@ -112,18 +113,24 @@ class CheckoutController extends Controller
         $item = Pembayaran::find($id);
 
         if (is_null($item))
-            return response('Data tidak ditemukan')->json();
+            return response('Data tidak ditemukan');
 
         //ubah status jadi lunas
+        $item->lunas = true;
         $item->tgl_lunas = now();
         $item->save();
 
         // kirim notifikasi ke user
         Notification::make()
             ->title('Pembayaran berhasil')
-            ->body('Pesanan #' . $item->id . ' dengan total ' . $item->total . ' telah berhasil di bayar.')
+            ->body('Pesanan #' . $item->id . ' dengan total Rp. ' . number_format($item->total) . ' telah berhasil di bayar.')
+            ->actions(
+                [
+                    Action::make('lihat')->url('/order/' . $item->id)
+                ]
+            )
             ->sendToDatabase($item->pesanan->first()->user);
 
-        return response('Status berhasil diubah')->json();
+        return response('Status berhasil diubah');
     }
 }
