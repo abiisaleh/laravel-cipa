@@ -105,7 +105,7 @@ class CheckoutController extends Controller
 
     public function updateStats()
     {
-        $data = request()->all('data');
+        $data = request()->all();
         return $data;
 
         $id = $data['reference_id'];
