@@ -106,24 +106,13 @@ class CheckoutController extends Controller
     public function updateStats()
     {
         $data = request()->all();
-        return $data;
 
-        $id = $data['reference_id'];
+        $id = $data['external_id'];
 
         $item = Pembayaran::find($id);
 
         if (is_null($item))
             return response('Data tidak ditemukan')->json();
-
-        if ($data['status'] != 'SUCCEEDED') {
-            // kirim notifikasi ke user
-            Notification::make()
-                ->title('Pembayaran gagal')
-                ->body('Waktu Pesanan #' . $item->id . ' telah berakhir. Harap melakukan checkout ulang untuk melakukan pembayaran ulang')
-                ->sendToDatabase($item->pesanan->first()->user);
-
-            return response('Pembayaran gagal')->json();
-        }
 
         //ubah status jadi lunas
         $item->tgl_lunas = now();
