@@ -53,4 +53,4 @@ Route::middleware([
 
 
 
-Route::post('/checkout/callback', [CheckoutController::class, 'updateStat']);
+Route::post('/checkout/callback', [CheckoutController::class, 'updateStats']);
