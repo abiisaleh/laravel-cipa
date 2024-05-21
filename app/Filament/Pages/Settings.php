@@ -18,6 +18,7 @@ use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\CreateAction;
@@ -27,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\File;
 
 class Settings extends Page implements HasForms, HasActions, HasTable
 {
@@ -63,17 +65,32 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                                     ->required()
                                     ->default(Setting::where('key', 'alamat')->first()->value ?? '')
                                     ->columnSpanFull(),
-                                Select::make('kelurahan')
-                                    ->options([
-                                        'Abepura' => 'Abepura'
-                                    ])
-                                    ->default(Setting::where('key', 'kelurahan')->first()->value ?? '')
-                                    ->required(),
                                 Select::make('kecamatan')
-                                    ->options([
-                                        'Abepura' => 'Abepura'
-                                    ])
+                                    ->options(function () {
+                                        $data = File::json('kotajayapura.json');
+                                        foreach ($data as $key => $value) {
+                                            $options[$key] = $key;
+                                        }
+                                        return $options;
+                                    })
+                                    ->native(false)
                                     ->default(Setting::where('key', 'kecamatan')->first()->value ?? '')
+                                    ->required(),
+                                Select::make('kelurahan')
+                                    ->options(function (Get $get) {
+                                        $kecamatan = $get('kecamatan');
+                                        $data = File::json('kotajayapura.json');
+                                        if (!$kecamatan) {
+                                            return [];
+                                        }
+
+                                        foreach ($data[$kecamatan] as $item) {
+                                            $options[$item] = $item;
+                                        }
+                                        return $options;
+                                    })
+                                    ->native(false)
+                                    ->default(Setting::where('key', 'kelurahan')->first()->value ?? '')
                                     ->required(),
                                 TextInput::make('kode_pos')
                                     ->maxLength(6)

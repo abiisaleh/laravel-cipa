@@ -134,7 +134,10 @@
 
                             @if ($record->lunas)
                                 <x-list-timeline icon="heroicon-o-credit-card" :text="date_create($record->tgl_lunas)->format('d M Y, h:i')">
-                                    Pembayaran diterima - Virtual Account Bank {{ $record->metode }}
+                                    Pembayaran diterima - Virtual Account Bank {{ $record->metode }} <br>
+                                    <a href="{{ url('checkout', $record->id) }}"
+                                        class="text-sm font-semibold text-primary-600 hover:underline">Lihat Bukti
+                                        Pembayaran.</a>
                                 </x-list-timeline>
                             @endif
 

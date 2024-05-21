@@ -71,6 +71,9 @@ class CheckoutController extends Controller
 
     public function view(Pembayaran $record)
     {
+        if ($record->lunas)
+            return redirect('checkout/' . $record->id . '/print');
+
         $batasWaktu = Carbon::createFromDate()->addDays(30);
 
         if (!$record->motode == 'cash') {

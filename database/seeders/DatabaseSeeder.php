@@ -91,12 +91,12 @@ class DatabaseSeeder extends Seeder
         $data = [
             'ongkir' => 10000,
             'persentase_denda' => 5,
-            'alamat' => '',
-            'kode_pos' => '99351',
-            'kecamatan' => '',
-            'kelurahan' => '',
-            'telp' => '',
-            'email' => '',
+            'alamat' => 'Jl. Poros',
+            'kode_pos' => '99225',
+            'kecamatan' => 'Abepura',
+            'kelurahan' => 'Way Mhorock',
+            'telp' => '6282248440010',
+            'email' => 'pt.indo.gas.papua@email.com',
         ];
 
         foreach ($data as $key => $value) {

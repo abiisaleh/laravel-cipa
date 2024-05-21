@@ -1,0 +1,45 @@
+{
+    "Abepura": [
+        "Abepantai",
+        "Asano",
+        "Awiyo",
+        "Engros",
+        "Kota Baru",
+        "Koya Koso",
+        "Nafri",
+        "Vim",
+        "Wahno",
+        "Way Mhorock",
+        "Yobe"
+    ],
+    "Heram": ["Hedam", "Kampung Waena", "Waena", "Yabansai", "Yoka"],
+    "Jayapura Utara": [
+        "Angkasapura",
+        "Bhayangkara",
+        "Gurabesi",
+        "Imbi",
+        "Koya Batu",
+        "Mandala",
+        "Tanjung Ria",
+        "Trikora"
+    ],
+    "Jayapura Selatan": [
+        "Ardipura",
+        "Argapura",
+        "Entrop",
+        "Hamadi",
+        "Kayo Pulau",
+        "Numbay",
+        "Tobati"
+    ],
+    "Muara Tami": [
+        "Holtekamp",
+        "Koya Barat",
+        "Koya Tengah",
+        "Koya Timur",
+        "Mosso",
+        "Skow Mabo",
+        "Skow Sae",
+        "Skow Yambe"
+    ]
+}
