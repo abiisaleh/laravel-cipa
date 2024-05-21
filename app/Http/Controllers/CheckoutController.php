@@ -104,7 +104,7 @@ class CheckoutController extends Controller
                 "amount" => $record->subtotal,
             ])->json();
 
-        return redirect()->back();
+        return redirect(url('checkout/'.$record->id.'/print'));
     }
 
     public function updateStats()
