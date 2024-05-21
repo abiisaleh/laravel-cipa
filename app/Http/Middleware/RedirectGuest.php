@@ -15,16 +15,22 @@ class RedirectGuest
      */
     public function handle(Request $request, Closure $next): Response
     {
+        //kalau mau verifikasi langsung saja lewati pengecekan
+        if (str_contains(url()->current(), url('admin/email-verification/verify/')))
+            return $next($request);
+
+        //kalau user mau ke panel selain logout, profile dan promp email
         if (!in_array(url()->current(), [
             filament()->getLogoutUrl(),
             filament()->getProfileUrl(),
-            filament()->getVerifyEmailUrl(
-                auth()->user()
-            ),
             filament()->getEmailVerificationPromptUrl()
-        ]))
+        ])) {
             if (auth()->user()->role == 'pelanggan')
-                return redirect(url('order/new'));
+                if (auth()->user()->email_verified_at == null)
+                    return redirect(filament()->getEmailVerificationPromptUrl());
+                else
+                    return redirect(url('order/new'));
+        }
 
         return $next($request);
     }

@@ -26,7 +26,11 @@ class ListPembayarans extends ListRecords
             'belum_dibayar' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('lunas', false)),
             'belum_diantar' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('lunas', true)->where('diterima', true)),
+                ->modifyQueryUsing(function (Builder $query) {
+                    return $query
+                        ->where(fn ($query) => $query->where('metode', 'cash')->where('diterima', false))
+                        ->orWhere(fn ($query) => $query->whereNot('metode', 'cash')->where('lunas', true)->where('diterima', false));
+                }),
         ];
     }
 }

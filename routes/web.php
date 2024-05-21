@@ -3,6 +3,7 @@
 use App\Http\Controllers\CheckoutController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\DatabaseNotification;
+use App\Http\Middleware\UserVerification;
 use App\Models\Pembayaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +31,7 @@ Route::middleware([
 
     Route::prefix('order')->group(function () {
         Route::get('/', \App\Livewire\Order\ListOrder::class);
-        Route::get('/new', \App\Livewire\Order\CreateOrder::class);
+        Route::get('/new', \App\Livewire\Order\CreateOrder::class)->middleware([UserVerification::class]);
         Route::get('/{id}', \App\Livewire\Order\ViewOrder::class);
     });
 
@@ -54,8 +55,6 @@ Route::middleware([
         return $pdf->stream();
     });
 });
-
-
 
 
 Route::post('/checkout/callback', [CheckoutController::class, 'updateStats']);

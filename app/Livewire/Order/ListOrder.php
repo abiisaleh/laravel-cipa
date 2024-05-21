@@ -23,7 +23,10 @@ class ListOrder extends Component implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(Pembayaran::query())
+            ->query(Pembayaran::query()->whereHas(
+                'pesanan',
+                fn ($query) => $query->where('user_id', auth()->id())
+            ))
             ->modifyQueryUsing(function ($query) {
                 if ($this->activeTab === 'belumBayar')
                     $query->where('tgl_lunas', null);

@@ -15,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -46,14 +47,15 @@ class PelangganResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('instansi'),
-                TextColumn::make('alamat_kantor'),
+                TextColumn::make('instansi')->searchable(),
+                TextColumn::make('alamat_kantor')->searchable(),
                 TextColumn::make('telp_kantor'),
                 TextColumn::make('email_kantor'),
                 IconColumn::make('verified')->boolean(),
             ])
             ->filters([
-                //
+                Filter::make('verified')->query(fn (Builder $query) => $query->where('verified', true)),
+                Filter::make('not verified')->query(fn (Builder $query) => $query->where('verified', false))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

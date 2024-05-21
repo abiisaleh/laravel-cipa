@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,7 +26,6 @@ class PembayaranResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     protected static ?int $navigationSort = 2;
-
 
     public static function form(Form $form): Form
     {
@@ -48,7 +48,6 @@ class PembayaranResource extends Resource
                             ->content(fn (Pembayaran $record): string => $record->pesanan->first()->user->name ?? ''),
                         Forms\Components\Placeholder::make('email')
                             ->content(fn (Pembayaran $record): string => $record->pesanan->first()->user->email ?? ''),
-
                         Forms\Components\Placeholder::make('metode')
                             ->content(fn (Pembayaran $record): string => $record->metode),
                         Forms\Components\Placeholder::make('ongkir')
@@ -76,48 +75,18 @@ class PembayaranResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('instansi'),
+                Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'cash' ? 'success' : 'primary'),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
                     ->prefix('Rp ')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('lunas')
-                    ->boolean()
-                    ->hidden(auth()->user()->role == 'karyawan'),
+                    ->boolean(),
                 Tables\Columns\IconColumn::make('diterima')
-                    ->boolean()
-                    ->hidden(auth()->user()->role == 'karyawan'),
-                ToggleColumn::make('lunas')
-                    ->afterStateUpdated(function ($record, $state) {
-                        $record->tgl_lunas = null;
-
-                        if ($state)
-                            $record->tgl_lunas = now();
-
-                        $record->save();
-
-                        Notification::make()
-                            ->title('Success')
-                            ->success()
-                            ->send();
-                    }),
-
-                ToggleColumn::make('diterima')
-                    ->afterStateUpdated(function ($record, $state) {
-                        $record->tgl_diterima = null;
-
-                        if ($state)
-                            $record->tgl_diterima = now();
-
-                        $record->save();
-
-                        Notification::make()
-                            ->title('Success')
-                            ->success()
-                            ->send();
-                    })
+                    ->boolean(),
             ])
             ->filters([
-                //
+                Filter::make('Cash')->query(fn (Builder $query) => $query->where('metode', 'cash'))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -146,11 +115,6 @@ class PembayaranResource extends Resource
     }
 
     public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canDelete(Model $record): bool
     {
         return false;
     }
