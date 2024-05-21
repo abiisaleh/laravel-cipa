@@ -29,6 +29,12 @@ class PelangganResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function getNavigationBadge(): ?string
+    {
+        $countVerified = static::getModel()::where('verified', false)->count();
+        return $countVerified == 0 ? '' : $countVerified;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -61,9 +67,9 @@ class PelangganResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -85,10 +91,12 @@ class PelangganResource extends Resource
 
     public static function canCreate(): bool
     {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
         return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->role != 'petugas';
     }
 
     public static function canDelete(Model $record): bool

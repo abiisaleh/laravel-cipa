@@ -28,6 +28,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\File;
 
 class Settings extends Page implements HasForms, HasActions, HasTable
@@ -111,7 +113,7 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                             ->default(Setting::where('key', 'email')->first()->value ?? '')
                             ->email()
                             ->required(),
-                    ]),
+                    ])->disabled(auth()->user()->role == 'petugas'),
 
                 Section::make('Biaya')
                     ->aside()
@@ -133,7 +135,7 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                             ->maxValue(100)
                             ->suffix('%')
                             ->required(),
-                    ])
+                    ])->disabled(auth()->user()->role == 'petugas')
 
             ])
             ->statePath('data');
@@ -164,7 +166,14 @@ class Settings extends Page implements HasForms, HasActions, HasTable
             ->columns([
                 TextColumn::make('name'),
                 TextColumn::make('email'),
-                TextColumn::make('role')->badge(),
+                TextColumn::make('role')->badge()->color(function ($state) {
+                    if ($state == 'pimpinan')
+                        return 'success';
+                    if ($state == 'petugas')
+                        return 'primary';
+                    if ($state == 'karyawan')
+                        return 'danger';
+                }),
             ])
             ->filters([
                 // ...

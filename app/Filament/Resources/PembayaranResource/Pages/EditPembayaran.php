@@ -19,25 +19,28 @@ class EditPembayaran extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        if (auth()->user()->role == 'karyawan') {
+            if (!$this->record->lunas & $data['lunas']) {
+                $this->record->tgl_lunas = now();
+                $this->record->save();
+            }
 
-        if (!$this->record->lunas & $data['lunas']) {
-            $this->record->tgl_lunas = now();
-            $this->record->save();
+            if ($this->record->lunas & !$data['lunas']) {
+                $this->record->tgl_lunas = null;
+                $this->record->save();
+            }
         }
 
-        if ($this->record->lunas & !$data['lunas']) {
-            $this->record->tgl_lunas = null;
-            $this->record->save();
-        }
+        if (auth()->user()->role == 'petugas') {
+            if (!$this->record->diterima & $data['diterima']) {
+                $this->record->tgl_diterima = now();
+                $this->record->save();
+            }
 
-        if (!$this->record->diterima & $data['diterima']) {
-            $this->record->tgl_diterima = now();
-            $this->record->save();
-        }
-
-        if ($this->record->diterima & !$data['diterima']) {
-            $this->record->tgl_diterima = null;
-            $this->record->save();
+            if ($this->record->diterima & !$data['diterima']) {
+                $this->record->tgl_diterima = null;
+                $this->record->save();
+            }
         }
 
         return $data;

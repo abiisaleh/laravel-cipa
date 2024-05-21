@@ -5,10 +5,16 @@ namespace App\Filament\Widgets;
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ChartOrders extends ChartWidget
 {
-    protected static ?string $heading = 'Grafik Pendapatan';
+    protected static ?int $sort = 1;
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return 'Grafik Pendapatan ' . now()->year;
+    }
 
     protected function getData(): array
     {

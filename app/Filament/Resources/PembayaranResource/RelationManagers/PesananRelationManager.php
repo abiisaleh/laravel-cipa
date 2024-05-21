@@ -15,6 +15,8 @@ class PesananRelationManager extends RelationManager
 {
     protected static string $relationship = 'pesanan';
 
+    protected static ?string $title = 'Items';
+
     public function table(Table $table): Table
     {
         return $table
@@ -35,9 +37,9 @@ class PesananRelationManager extends RelationManager
                 // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 }

@@ -23,9 +23,26 @@ class PembayaranResource extends Resource
 {
     protected static ?string $model = Pembayaran::class;
 
+    protected static ?string $modelLabel = 'Pesanan';
+
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        $countLunas = static::getModel()::where('lunas', false)->count();
+        $countDiantar = static::getModel()::where(fn ($query) => $query->where('metode', 'cash')->where('diterima', false))
+            ->orWhere(fn ($query) => $query->whereNot('metode', 'cash')->where('lunas', true)->where('diterima', false))
+            ->count();
+
+        if (auth()->user()->role == 'karyawan')
+            return $countLunas == 0 ? '' : $countLunas;
+        if (auth()->user()->role == 'petugas')
+            return $countDiantar == 0 ? '' : $countDiantar;
+
+        return $countDiantar + $countLunas == 0 ? '' : $countDiantar + $countLunas;
+    }
 
     public static function form(Form $form): Form
     {
@@ -57,9 +74,14 @@ class PembayaranResource extends Resource
                     ])->grow()->columns(3),
 
                     Forms\Components\Section::make([
-                        Forms\Components\Toggle::make('lunas')->disabled(fn (Pembayaran $record) => $record->metode != 'cash'),
-                        Forms\Components\Toggle::make('diterima'),
-                    ])->grow(false),
+                        Forms\Components\Toggle::make('lunas')->disabled(function (Pembayaran $record) {
+                            if (auth()->user()->role == 'petugas')
+                                return true;
+
+                            return $record->metode != 'cash';
+                        }),
+                        Forms\Components\Toggle::make('diterima')->disabled(auth()->user()->role != 'petugas'),
+                    ])->grow(false)->hidden(auth()->user()->role == 'pimpinan'),
 
                 ])->from('md')->grow()
             ])->columns(1);
@@ -117,6 +139,11 @@ class PembayaranResource extends Resource
     public static function canCreate(): bool
     {
         return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->role != 'petugas';
     }
 
     public static function canDeleteAny(): bool

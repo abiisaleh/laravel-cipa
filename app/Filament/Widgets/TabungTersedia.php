@@ -9,6 +9,8 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class TabungTersedia extends BaseWidget
 {
+    protected static ?int $sort = 2;
+
     public function table(Table $table): Table
     {
         return $table
