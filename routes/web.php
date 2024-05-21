@@ -41,9 +41,14 @@ Route::middleware([
         Route::get('/{record}/print', [CheckoutController::class, 'print']);
     });
 
-    Route::get('report/print', function () {
+    Route::get('report/print/{from}/{until}', function ($from, $until) {
+        $item = Pembayaran::whereBetween('tgl_lunas', [$from, $until])->get();
+
         $pdf = Pdf::loadView('pdf.report', [
-            'items' => Pembayaran::all()
+            'from' => $from,
+            'until' => $until,
+            'items' =>  $item,
+            'total' => $item->sum('subtotal') + $item->sum('ongkir') + $item->sum('denda')
         ]);
 
         return $pdf->stream();

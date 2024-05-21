@@ -1,8 +1,12 @@
 <x-layouts.pdf>
 
-    <h1>Laporan Bulanan</h1>
-    <p>This PDF document is generated using domPDF in Laravel.</p>
-    <table>
+    <div class="mb-8">
+        <h1 class="text-xl font-bold">Laporan Penjualan</h1>
+        <p>Laporan ini dibuat dari {{ $from }} sampai {{ $until }}.
+        </p>
+    </div>
+
+    <table class="table mb-8">
         <thead>
             <th>dibuat</th>
             <th>email</th>
@@ -15,14 +19,14 @@
                     <td>{{ $item->created_at }}</td>
                     <td>{{ $item->email }}</td>
                     <td>{{ $item->instansi }}</td>
-                    <td>Rp. {{ number_format($item->total) }}</td>
+                    <td class="text-right">{{ number_format($item->total) }}</td>
                 </tr>
             @endforeach
         </tbody>
-        <tfoot>
+        <tfoot class="font-bold">
             <tr>
-                <td colspan="3">Total</td>
-                <td>Rp. 12.000</td>
+                <td colspan="3">Total Pendapatan</td>
+                <td>{{ number_format($total) }}</td>
             </tr>
         </tfoot>
     </table>

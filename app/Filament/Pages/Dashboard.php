@@ -5,6 +5,8 @@ namespace App\Filament\Pages;
 use App\Models\Pembayaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
@@ -16,8 +18,15 @@ class Dashboard extends \Filament\Pages\Dashboard
             Action::make('print')
                 ->label('Cetak Laporan')
                 ->icon('heroicon-s-printer')
-                ->url('report/print')
-                ->openUrlInNewTab()
+                ->form([
+                    Grid::make()->schema([
+                        DatePicker::make('dari')->native(false)->maxDate(now()->subWeek())->default(now()->subMonth()),
+                        DatePicker::make('sampai')->native(false)->maxDate(now())->default(now()),
+                    ])
+                ])
+                ->action(function (array $data) {
+                    return redirect(url('report/print', $data));
+                })
         ];
     }
 }

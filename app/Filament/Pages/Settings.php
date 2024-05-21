@@ -7,13 +7,18 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
@@ -46,24 +51,74 @@ class Settings extends Page implements HasForms, HasActions, HasTable
     {
         return $form
             ->schema([
-                TextInput::make('ongkir')
-                    ->label('Biaya Ongkir')
-                    ->default(Setting::where('key', 'ongkir')->first()->value)
-                    ->numeric()
-                    ->step(1000)
-                    ->prefix('Rp')
-                    ->suffix('/Kg')
-                    ->required(),
 
-                TextInput::make('denda')
-                    ->label('Persentase Denda')
-                    ->default(5)
-                    ->numeric()
-                    ->maxValue(100)
-                    ->suffix('%')
-                    ->required(),
+                Section::make('Contact Kantor')
+                    ->aside()
+                    ->description('Data ini akan di tampilkan di halaman web sebagai kontak dan akan muncul di laporan sebagai kop surat')
+                    ->schema([
+                        Fieldset::make('Alamat Kantor')
+                            ->schema([
+                                TextInput::make('alamat')
+                                    ->placeholder('masukkan nama jalan atau nomor bangunan')
+                                    ->required()
+                                    ->default(Setting::where('key', 'alamat')->first()->value ?? '')
+                                    ->columnSpanFull(),
+                                Select::make('kelurahan')
+                                    ->options([
+                                        'Abepura' => 'Abepura'
+                                    ])
+                                    ->default(Setting::where('key', 'kelurahan')->first()->value ?? '')
+                                    ->required(),
+                                Select::make('kecamatan')
+                                    ->options([
+                                        'Abepura' => 'Abepura'
+                                    ])
+                                    ->default(Setting::where('key', 'kecamatan')->first()->value ?? '')
+                                    ->required(),
+                                TextInput::make('kode_pos')
+                                    ->maxLength(6)
+                                    ->default(Setting::where('key', 'kode_pos')->first()->value ?? '')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->columns(3),
+
+                        TextInput::make('telp')
+                            ->label('Telp Kantor')
+                            ->default(Setting::where('key', 'telp')->first()->value ?? '')
+                            ->tel()
+                            ->required(),
+
+                        TextInput::make('email')
+                            ->label('Email Kantor')
+                            ->default(Setting::where('key', 'email')->first()->value ?? '')
+                            ->email()
+                            ->required(),
+                    ]),
+
+                Section::make('Biaya')
+                    ->aside()
+                    ->description('Data ini digunakan untuk proses biaya  tambahan dalam pemesanan')
+                    ->schema([
+                        TextInput::make('ongkir')
+                            ->label('Biaya Ongkir')
+                            ->default(Setting::where('key', 'ongkir')->first()->value)
+                            ->numeric()
+                            ->step(1000)
+                            ->prefix('Rp')
+                            ->suffix('/Kg')
+                            ->required(),
+
+                        TextInput::make('denda')
+                            ->label('Persentase Denda')
+                            ->default(Setting::where('key', 'presentase_denda')->first()->value ?? 5)
+                            ->numeric()
+                            ->maxValue(100)
+                            ->suffix('%')
+                            ->required(),
+                    ])
+
             ])
-            ->inlineLabel()
             ->statePath('data');
     }
 
@@ -116,7 +171,17 @@ class Settings extends Page implements HasForms, HasActions, HasTable
 
     public function saveAction(): Action
     {
-        return Action::make('simpan')
-            ->action(fn () => $this->post->delete());
+        return Action::make('save')
+            ->label('Simpan Perubahan')
+            ->action(function (Setting $setting) {
+                foreach ($this->form->getState() as $key => $value) {
+                    $setting->where('key', $key)->update(['value' => $value]);
+                }
+
+                Notification::make()
+                    ->title('Success')
+                    ->success()
+                    ->send();
+            });
     }
 }
