@@ -3,7 +3,7 @@
         <h3 class="mb-4 text-xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-4xl">
             Riwayat Pesanan
         </h3>
-        <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl">Pilih tabung yang ingin dipesan.</p>
+        <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl">Daftar tabung yang sudah dipesan. <a href="/order/new" class="text-primary-600 hover:underline">Buat pesanan baru?</a></p>
         <div class="mb-8 grid">
             <x-filament::tabs label="Content tabs">
                 <x-filament::tabs.item :active="$activeTab === 'semua'"
