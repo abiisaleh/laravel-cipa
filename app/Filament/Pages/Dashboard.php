@@ -19,7 +19,7 @@ class Dashboard extends \Filament\Pages\Dashboard
                 ->form([
                     Grid::make()->schema([
                         DatePicker::make('dari')->native(false)->maxDate(now()->subWeek())->default(now()->subMonth()),
-                        DatePicker::make('sampai')->native(false)->maxDate(now())->default(now()),
+                        DatePicker::make('sampai')->native(false)->maxDate(now())->default(now()->addDay()),
                     ])
                 ])
                 ->action(function (array $data) {
