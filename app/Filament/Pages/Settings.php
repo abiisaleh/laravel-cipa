@@ -136,7 +136,7 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                             ->numeric()
                             ->maxValue(100)
                             ->suffix('%')
-->helperText(str('Total denda yang akan didapatkan pelanggan **Jumlah Bulan Terlewat * Jumlah Denda**, jumlah suatu denda ditentukan dari besar **Presentase Denda * Total Pembayaran**.')->inlineMarkdown()->toHtmlString())
+->helperText(str('Total denda yang akan didapatkan pelanggan **Jumlah Bulan Terlewat × Jumlah Denda**, jumlah suatu denda ditentukan dari besar **Presentase Denda × Total Pembayaran**.')->inlineMarkdown()->toHtmlString())
 
                             ->required(),
                     ])
