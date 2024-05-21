@@ -126,6 +126,8 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                             ->step(1000)
                             ->prefix('Rp')
                             ->suffix('/Kg')
+->helperText(str('Total biaya ongkir yang akan didapatkan pelanggan sebesar **Total Berat Tabung × Biaya Ongkir**.')->inlineMarkdown()->toHtmlString())
+
                             ->required(),
 
                         TextInput::make('denda')
@@ -134,8 +136,10 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                             ->numeric()
                             ->maxValue(100)
                             ->suffix('%')
+->helperText(str('Total denda yang akan didapatkan pelanggan **Jumlah Bulan Terlewat * Jumlah Denda**, jumlah suatu denda ditentukan dari besar **Presentase Denda * Total Pembayaran**.')->inlineMarkdown()->toHtmlString())
+
                             ->required(),
-                    ])->disabled(auth()->user()->role == 'petugas')
+                    ])
 
             ])
             ->statePath('data');
