@@ -47,7 +47,7 @@
 
     <footer class="p-4 sm:p-6 ">
         <div class="mx-auto max-w-screen-xl">
-            <div class="{{ $active ? 'hidden' : 'md:flex' }}  md:justify-between">
+            <div class="{{ $active ? 'hidden' : 'md:flex' }} hidden md:justify-between">
                 <div class="mb-6 md:mb-0">
                     <a href="/" class="flex items-center">
                         <img src="/img/logo.png" class="mr-3 h-8" alt="Oxygen Logo" />
