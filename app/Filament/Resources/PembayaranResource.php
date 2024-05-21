@@ -39,7 +39,7 @@ class PembayaranResource extends Resource
                             ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_lunas : 'xxx')
                             ->hidden(fn (Pembayaran $record) => $record->lunas),
                         Forms\Components\Placeholder::make('diterima')
-                            ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_diterima : 'xxx')
+                            ->content(fn (Pembayaran $record): string => ($record->diterima) ? $record->tgl_diterima : 'xxx')
                             ->hidden(fn (Pembayaran $record) => $record->diantar),
 
                         Forms\Components\Placeholder::make('instansi')
