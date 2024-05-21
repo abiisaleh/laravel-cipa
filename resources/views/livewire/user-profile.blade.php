@@ -13,10 +13,16 @@
                     <p class="text-sm md:text-md">{{ auth()->user()->email }}</p>
                 </div>
                 <div class="">
+ @if (auth()->user()->pelanggan != null)
                     <span
-                        class="text-xs font-semibold py-0.5 px-2.5 rounded {{ auth()->user()->pelanggan->verified == null ? 'text-danger-800 bg-danger-100' : 'text-success-800 bg-success-100' }}">
-                        {{ auth()->user()->pelanggan->verified == null ? 'not verified' : 'verified' }}
+                        class="text-xs font-semibold py-0.5 px-2.5 rounded {{ auth()->user()->pelanggan->verified ? 'text-danger-800 bg-danger-100' : 'text-success-800 bg-success-100' }}">
+                        {{ auth()->user()->pelanggan->verified ? 'not verified' : 'verified' }}
                     </span>
+@else
+<span
+                        class="text-xs font-semibold py-0.5 px-2.5 rounded text-danger-800 bg-danger-100">not verified
+                    </span>
+@endif
                 </div>
 
             </div>
