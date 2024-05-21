@@ -153,7 +153,7 @@
 
                     </ol>
 
-                    <div class="gap-4 flex-row sm:flex sm:items-center" id="btn-timeline">
+                    <div class="gap-4 flex-row flex sm:flex-col sm:items-center" id="btn-timeline">
                         @if ($record->trashed())
                             {{ $this->restoreAction }}
                         @else
