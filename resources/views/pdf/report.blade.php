@@ -17,8 +17,8 @@
             @foreach ($items as $item)
                 <tr>
                     <td>{{ $item->created_at }}</td>
-                    <td>{{ $item->email }}</td>
-                    <td>{{ $item->instansi }}</td>
+                    <td>{{ $item->user->email }}</td>
+                    <td>{{ $item->pelanggan->instansi }}</td>
                     <td class="text-right">{{ number_format($item->total) }}</td>
                 </tr>
             @endforeach
