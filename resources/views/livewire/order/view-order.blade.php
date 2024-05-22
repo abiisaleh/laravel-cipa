@@ -104,9 +104,7 @@
 
                                 <x-list-timeline icon="heroicon-o-home" :text="date_create($record->tgl_diterima)->format('d M Y, h:i')">
                                     Pesanan telah sampai
-                                    diterima oleh yang bersangkutan. <a href="#"
-                                        class="text-sm font-semibold text-primary-600 hover:underline">Lihat Bukti
-                                        Pengiriman.</a>
+                                    diterima oleh yang bersangkutan.
                                 </x-list-timeline>
                             @endif
 
