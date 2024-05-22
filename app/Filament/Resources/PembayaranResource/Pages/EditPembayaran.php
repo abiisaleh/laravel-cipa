@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PembayaranResource\Pages;
 
 use App\Filament\Resources\PembayaranResource;
+use App\Models\Pembayaran;
 use Filament\Actions;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
@@ -15,7 +16,18 @@ class EditPembayaran extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->before(function (Pembayaran $record) {
+                    //kembalikan stok tiap pesanan
+                    foreach ($record->pesanan as $pesanan) {
+                        //cek stok selain refill
+                        if (!strpos($pesanan->nama, 'refill')) {
+                            $tabung = \App\Models\Tabung::find($pesanan->tabung->id);
+                            $tabung->stok += $pesanan->qty;
+                            $tabung->save();
+                        }
+                    }
+                }),
         ];
     }
 

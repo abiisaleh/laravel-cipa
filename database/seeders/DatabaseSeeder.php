@@ -110,7 +110,7 @@ class DatabaseSeeder extends Seeder
         $qty = rand(1, 10);
 
         DB::table('pembayarans')->insert([
-            'metode' => 'cash',
+            'metode' => 'Cash',
             'subtotal' => $qty * $tabung->harga_refill,
             'ongkir' => $tabung->berat * 10000,
             'created_at' => now(),

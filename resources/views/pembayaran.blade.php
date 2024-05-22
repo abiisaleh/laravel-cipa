@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="py-4">
-                    @if ($item->metode == 'cash')
+                    @if ($item->metode == 'Cash')
                         <p>Pembayaran Tunai (Cash)</p>
                         <div class="text-sm py-4">
                             <p class="pb-4 text-danger-600">Harap melakukan pembayaran agar tidak di kenakan denda

@@ -58,7 +58,7 @@ class ListOrder extends Component implements HasForms, HasTable
             })
             ->columns([
                 TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y, H:m')->since(),
-                TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'cash' ? 'success' : 'primary'),
+                TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'Cash' ? 'success' : 'primary'),
                 TextColumn::make('total')->numeric()->prefix('Rp '),
                 IconColumn::make('lunas')->boolean(),
                 IconColumn::make('diterima')->boolean(),

@@ -35,6 +35,16 @@ class ViewOrder extends Component implements HasForms, HasActions
             ->color('danger')
             ->label('Batalkan Pesanan')
             ->action(function () {
+                //kembalikan stok tiap pesanan
+                foreach ($this->items as $pesanan) {
+                    //cek stok selain refill
+                    if (!strpos($pesanan->nama, 'refill')) {
+                        $tabung = \App\Models\Tabung::find($pesanan->tabung->id);
+                        $tabung->stok += $pesanan->qty;
+                        $tabung->save();
+                    }
+                }
+
                 $this->record->delete();
 
                 Notification::make()

@@ -23,8 +23,8 @@ class ListPembayarans extends ListRecords
     public function getTabs(): array
     {
         $countBelumBayar = Pembayaran::where('lunas', false)->count();
-        $countBelumDiantar = Pembayaran::where(fn ($query) => $query->where('metode', 'cash')->where('diterima', false))
-            ->orWhere(fn ($query) => $query->whereNot('metode', 'cash')->where('lunas', true)->where('diterima', false))
+        $countBelumDiantar = Pembayaran::where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', false))
+            ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', true)->where('diterima', false))
             ->count();
 
         return [
@@ -38,8 +38,8 @@ class ListPembayarans extends ListRecords
                 ->badge($countBelumDiantar == 0 ? '' : $countBelumDiantar)
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query
-                        ->where(fn ($query) => $query->where('metode', 'cash')->where('diterima', false))
-                        ->orWhere(fn ($query) => $query->whereNot('metode', 'cash')->where('lunas', true)->where('diterima', false));
+                        ->where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', false))
+                        ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', true)->where('diterima', false));
                 }),
         ];
     }

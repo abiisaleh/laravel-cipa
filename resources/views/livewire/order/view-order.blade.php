@@ -90,7 +90,7 @@
                             </x-list-timeline>
                         @endif
 
-                        @if ($record->metode == 'cash')
+                        @if ($record->metode == 'Cash')
                             @if ($record->lunas)
                                 <x-list-timeline icon="heroicon-o-credit-card" :text="date_create($record->tgl_lunas)->format('d M Y, h:i')">
                                     Pembayaran diterima

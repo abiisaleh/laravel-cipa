@@ -173,7 +173,7 @@
                             <div x-data="{ open: false }">
                                 <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
                                     <div x-on:click="open = false">
-                                        <x-radio-btn name="jenis-pembayaran" value="cash">
+                                        <x-radio-btn name="jenis-pembayaran" value="Cash">
                                             <div class="w-full">Cash</div>
                                         </x-radio-btn>
                                     </div>
@@ -260,7 +260,7 @@
                                 <div x-data="{ open: false }">
                                     <ul class="grid grid-cols-1 w-full gap-2 md:gap-6 md:grid-cols-2 text-center">
                                         <div x-on:click="open = false">
-                                            <x-radio-btn name="jenis-pembayaran" value="cash" id="cart-cash">
+                                            <x-radio-btn name="jenis-pembayaran" value="Cash" id="cart-Cash">
                                                 <div class="w-full">Cash</div>
                                             </x-radio-btn>
                                         </div>

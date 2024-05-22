@@ -32,8 +32,8 @@ class PembayaranResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $countLunas = static::getModel()::where('lunas', false)->count();
-        $countDiantar = static::getModel()::where(fn ($query) => $query->where('metode', 'cash')->where('diterima', false))
-            ->orWhere(fn ($query) => $query->whereNot('metode', 'cash')->where('lunas', true)->where('diterima', false))
+        $countDiantar = static::getModel()::where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', false))
+            ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', true)->where('diterima', false))
             ->count();
 
         if (auth()->user()->role == 'karyawan')
@@ -105,7 +105,7 @@ class PembayaranResource extends Resource
                             if (auth()->user()->role == 'petugas')
                                 return true;
 
-                            return $record->metode != 'cash';
+                            return $record->metode != 'Cash';
                         }),
                         Forms\Components\Toggle::make('diterima')->disabled(auth()->user()->role != 'petugas'),
                     ])->grow(false)->hidden(auth()->user()->role == 'pimpinan'),
@@ -124,7 +124,7 @@ class PembayaranResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')->label('Pemesan'),
                 Tables\Columns\TextColumn::make('pelanggan.instansi')->label('Instansi'),
-                Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'cash' ? 'success' : 'primary'),
+                Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'Cash' ? 'success' : 'primary'),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
                     ->prefix('Rp ')
@@ -135,7 +135,7 @@ class PembayaranResource extends Resource
                     ->boolean(),
             ])
             ->filters([
-                Filter::make('Cash')->query(fn (Builder $query) => $query->where('metode', 'cash'))
+                Filter::make('Cash')->query(fn (Builder $query) => $query->where('metode', 'Cash'))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
