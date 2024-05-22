@@ -77,7 +77,6 @@ class CheckoutController extends Controller
         $batasWaktu = Carbon::parse($record->created_at)->addDays(30);
 
         if ($record->metode != 'cash') {
-            dd('hai');
             $getVA = Http::withHeader('content-type', 'application/json')
                 ->withBasicAuth(env('XENDIT_API_KEY'), '')
                 ->get('https://api.xendit.co/callback_virtual_accounts/' . $record->va_id)->json();
