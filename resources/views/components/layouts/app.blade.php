@@ -56,7 +56,8 @@
                 </div>
                 <div class="sm:text-right text-sm text-gray-500 }}">
                     <p class="font-semibold">PT. Indo Gas Papua</p>
-                    <p>{{ $alamat }}, Kel. {{ $kelurahan }}, Kec. {{ $kecamatan }},<br> Kab. Kota Jayapura
+                    <p class="text-xs">{{ $alamat }}, Kel. {{ $kelurahan }}, Kec. {{ $kecamatan }},<br> Kab.
+                        Kota Jayapura
                         {{ $kode_pos }}</p>
                     <p>
                         <a href="mailto://{{ $email }}"

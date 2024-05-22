@@ -74,9 +74,10 @@ class CheckoutController extends Controller
         if ($record->lunas)
             return redirect('checkout/' . $record->id . '/print');
 
-        $batasWaktu = Carbon::createFromDate()->addDays(30);
+        $batasWaktu = Carbon::parse($record->created_at)->addDays(30);
 
-        if (!$record->motode == 'cash') {
+        if ($record->metode != 'cash') {
+            dd('hai');
             $getVA = Http::withHeader('content-type', 'application/json')
                 ->withBasicAuth(env('XENDIT_API_KEY'), '')
                 ->get('https://api.xendit.co/callback_virtual_accounts/' . $record->va_id)->json();
@@ -104,7 +105,7 @@ class CheckoutController extends Controller
                 "amount" => $record->subtotal,
             ])->json();
 
-        return redirect(url('checkout/'.$record->id.'/print'));
+        return redirect(url('checkout/' . $record->id . '/print'));
     }
 
     public function updateStats()

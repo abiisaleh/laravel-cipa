@@ -80,6 +80,7 @@
             <span class="text-4xl font-bold">Oxygen</span>
         </td>
         <td width="30%">
+            <p>PT. Indo Gas Papua</p>
             <p> {{ $alamat }}, Kel. {{ $kelurahan }}, Kec. {{ $kecamatan }}, Kab. Kota Jayapura
                 {{ $kode_pos }}</p>
             <p> {{ $email }}</p>
