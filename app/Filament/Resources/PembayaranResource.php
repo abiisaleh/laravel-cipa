@@ -49,29 +49,56 @@ class PembayaranResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Split::make([
-                    Forms\Components\Section::make([
-                        Forms\Components\Placeholder::make('dibuat')
-                            ->content(fn (Pembayaran $record): string => $record->created_at->toFormattedDateString()),
-                        Forms\Components\Placeholder::make('dibayar')
-                            ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_lunas : 'xxx')
-                            ->hidden(fn (Pembayaran $record) => $record->lunas),
-                        Forms\Components\Placeholder::make('diterima')
-                            ->content(fn (Pembayaran $record): string => ($record->diterima) ? $record->tgl_diterima : 'xxx')
-                            ->hidden(fn (Pembayaran $record) => $record->diantar),
+                    Forms\Components\Group::make([
+                        Forms\Components\Section::make([
+                            Forms\Components\Placeholder::make('dibuat')
+                                ->content(fn (Pembayaran $record): string => $record->created_at),
+                            Forms\Components\Placeholder::make('dibayar')
+                                ->content(fn (Pembayaran $record): string => ($record->lunas) ? $record->tgl_lunas : 'xxx'),
+                            Forms\Components\Placeholder::make('diterima')
+                                ->content(fn (Pembayaran $record): string => ($record->diterima) ? $record->tgl_diterima : 'xxx')
 
-                        Forms\Components\Placeholder::make('instansi')
-                            ->content(fn (Pembayaran $record): string => $record->instansi),
-                        Forms\Components\Placeholder::make('email')
-                            ->content(fn (Pembayaran $record): string => $record->pesanan->first()->user->name ?? ''),
-                        Forms\Components\Placeholder::make('email')
-                            ->content(fn (Pembayaran $record): string => $record->pesanan->first()->user->email ?? ''),
-                        Forms\Components\Placeholder::make('metode')
-                            ->content(fn (Pembayaran $record): string => $record->metode),
-                        Forms\Components\Placeholder::make('ongkir')
-                            ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->ongkir)),
-                        Forms\Components\Placeholder::make('total')
-                            ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->total)),
-                    ])->grow()->columns(3),
+                        ])->grow()->columns(3),
+
+                        Forms\Components\Section::make([
+                            Forms\Components\Placeholder::make('pemesan')
+                                ->content(function (Pembayaran $record) {
+                                    return str(
+                                        '<div class="flex items-center">
+                                            <img class="w-9 h-9 rounded-full" src="' . filament()->getUserAvatarUrl($record->user) . '"
+                                            alt="user photo">
+                                            <div class="px-2">
+                                    ' .
+                                            $record->user->name . '<br>' .
+                                            '<a href="mailto://' . $record->user->email . '" class="cursor-pointer hover:underline">' . $record->user->email . '</a><br>
+                                            </div>
+                                        </div>'
+                                    )->toHtmlString();
+                                }),
+
+                            Forms\Components\Placeholder::make('alamat_pengiriman')
+                                ->content(function (Pembayaran $record) {
+                                    return str(
+                                        '<b>' . $record->pelanggan->instansi . '</b><br>' .
+                                            $record->pelanggan->telp_kantor . '<br>' .
+                                            '<p class="text-gray-500">' . $record->pelanggan->alamat_kantor . '</p><br>'
+                                    )->toHtmlString();
+                                }),
+                        ])->grow()->columns(),
+
+                        Forms\Components\Section::make([
+
+                            Forms\Components\Placeholder::make('metode')
+                                ->content(fn (Pembayaran $record): string => $record->metode),
+                            Forms\Components\Placeholder::make('ongkir')
+                                ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->ongkir)),
+                            Forms\Components\Placeholder::make('denda')
+                                ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->denda)),
+                            Forms\Components\Placeholder::make('total')
+                                ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->total)),
+                        ])->grow()->columns(4),
+                    ]),
+
 
                     Forms\Components\Section::make([
                         Forms\Components\Toggle::make('lunas')->disabled(function (Pembayaran $record) {
@@ -95,8 +122,8 @@ class PembayaranResource extends Resource
                     ->label('Dibuat')
                     ->dateTime('d M Y, h:i')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('instansi'),
+                Tables\Columns\TextColumn::make('user.name')->label('Pemesan'),
+                Tables\Columns\TextColumn::make('pelanggan.instansi')->label('Instansi'),
                 Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'cash' ? 'success' : 'primary'),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()

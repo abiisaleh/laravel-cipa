@@ -18,17 +18,17 @@ class Pembayaran extends Model
         return $this->hasMany(Pesanan::class);
     }
 
-    protected function email(): Attribute
+    protected function user(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->pesanan->first()->user->email
+            get: fn () => $this->pesanan->first()->user
         );
     }
 
-    protected function instansi(): Attribute
+    protected function pelanggan(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->pesanan->first()->user->pelanggan->instansi
+            get: fn () => $this->pesanan->first()->user->pelanggan
         );
     }
 
