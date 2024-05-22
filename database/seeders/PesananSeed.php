@@ -21,7 +21,6 @@ class PesananSeed extends Seeder
             $date = fake()->dateTimeBetween('-3 months', 'yesterday');
 
             $pesanan = Pesanan::factory()
-                ->count(rand(1, 10))
                 ->for(Tabung::all()->random())
                 ->for(User::where('role', 'pelanggan')->get()->random())
                 ->create([
