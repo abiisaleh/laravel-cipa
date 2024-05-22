@@ -74,7 +74,8 @@ class ListOrder extends Component implements HasForms, HasTable
             ])
             ->bulkActions([
                 // ...
-            ]);
+            ])
+            ->defaultSort('created_at');
     }
     public function render()
     {
