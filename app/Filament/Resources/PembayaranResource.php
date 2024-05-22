@@ -145,7 +145,7 @@ class PembayaranResource extends Resource
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
             ])
-            ->defaultSort('created_at');
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
