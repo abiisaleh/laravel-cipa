@@ -27,18 +27,10 @@ class PesananSeed extends Seeder
                     'created_at' => $date->sub(new DateInterval('PT3H'))
                 ]);
 
-            $subtotal = 0;
-            $berat = 0;
-
-            foreach ($pesanan as $record) {
-                $subtotal += $record->harga * $record->qty;
-                $berat += $record->tabung->berat;
-            }
-
             $pembayaran = Pembayaran::factory()
                 ->create([
-                    'subtotal' => $subtotal,
-                    'ongkir' => $berat * 10000,
+                    'subtotal' => $pesanan->harga * $pesanan->qty,
+                    'ongkir' => $pesanan->tabung->berat * 10000,
                     'lunas' => true,
                     'tgl_lunas' => $date->add(new DateInterval('PT1H')),
                     'diterima' => true,
@@ -46,10 +38,8 @@ class PesananSeed extends Seeder
                     'created_at' => $date
                 ]);
 
-            foreach ($pesanan as $record) {
-                $record->pembayaran_id = $pembayaran->id;
-                $record->save();
-            }
+            $pesanan->pembayaran_id = $pembayaran->id;
+            $pesanan->save();
         }
     }
 }
