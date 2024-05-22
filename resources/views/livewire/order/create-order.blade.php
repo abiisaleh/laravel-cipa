@@ -258,7 +258,7 @@
                                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Metode pembayaran
                                 </h3>
                                 <div x-data="{ open: false }">
-                                    <ul class="grid w-full gap-2 md:gap-6 grid-cols-2 text-center">
+                                    <ul class="grid grid-cols-1 w-full gap-2 md:gap-6 md:grid-cols-2 text-center">
                                         <div x-on:click="open = false">
                                             <x-radio-btn name="jenis-pembayaran" value="cash" id="cart-cash">
                                                 <div class="w-full">Cash</div>
