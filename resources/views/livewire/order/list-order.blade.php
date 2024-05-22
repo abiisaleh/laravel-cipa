@@ -23,13 +23,19 @@
                 <x-filament::tabs.item :active="$activeTab
                     === 'belumBayar'"
                     wire:click="$set('activeTab', 'belumBayar')">
-                    Belum dibayar
+                    Belum dibayar 
+                    @if ($countBelumBayar != 0)
+                        <span class="bg-primary-200 text-primary-600 rounded px-1.5">{{$countBelumBayar}}</span>
+                    @endif
                 </x-filament::tabs.item>
 
                 <x-filament::tabs.item :active="$activeTab
                     === 'sudahBayar'"
                     wire:click="$set('activeTab', 'sudahBayar')">
-                    Sudah dibayar
+                    Sudah dibayar 
+                    @if ($countSudahBayar != 0)
+                        <span class="bg-primary-200 text-primary-600 rounded px-1.5">{{$countSudahBayar}}</span>
+                    @endif
                 </x-filament::tabs.item>
 
                 <x-filament::tabs.item :active="$activeTab

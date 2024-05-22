@@ -18,7 +18,16 @@ class ListOrder extends Component implements HasForms, HasTable
     use InteractsWithTable;
     use InteractsWithForms;
 
+    public $countBelumBayar = '';
+    public $countSudahBayar = '';
+
     public ?string $activeTab = 'semua';
+
+    public function mount()
+    {
+        $this->countBelumBayar = Pembayaran::where('tgl_lunas', null)->count();
+        $this->countSudahBayar = Pembayaran::whereNot('tgl_lunas', null)->where('tgl_diterima', null)->count();
+    }
 
     public function table(Table $table): Table
     {
@@ -43,8 +52,8 @@ class ListOrder extends Component implements HasForms, HasTable
                 return $query;
             })
             ->columns([
-                TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y, H:m'),
-                TextColumn::make('metode'),
+                TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y, H:m')->since(),
+                TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'cash' ? 'success' : 'primary'),
                 TextColumn::make('total')->numeric()->prefix('Rp '),
                 IconColumn::make('lunas')->boolean(),
                 IconColumn::make('diterima')->boolean(),
