@@ -3,6 +3,8 @@
 use App\Http\Controllers\CheckoutController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\DatabaseNotification;
+use App\Http\Middleware\UserPelanggan;
+use App\Http\Middleware\UserPimpinan;
 use App\Http\Middleware\UserVerification;
 use App\Models\Pembayaran;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -24,6 +26,7 @@ Route::view('/', 'index')->middleware(DatabaseNotification::class);
 Route::middleware([
     Authenticate::class,
     DatabaseNotification::class,
+    UserPelanggan::class,
 ])->group(function () {
     Route::prefix('profil')->group(function () {
         Route::get('/', \App\Livewire\UserProfile::class);
@@ -41,20 +44,22 @@ Route::middleware([
         Route::get('/{record}/simulasi', [CheckoutController::class, 'simulate']);
         Route::get('/{record}/print', [CheckoutController::class, 'print']);
     });
-
-    Route::get('report/print/{from}/{until}', function ($from, $until) {
-        $item = Pembayaran::whereBetween('tgl_lunas', [$from, $until])->get();
-
-        $pdf = Pdf::loadView('pdf.report', [
-            'from' => $from,
-            'until' => $until,
-            'items' =>  $item,
-            'total' => $item->sum('subtotal') + $item->sum('ongkir') + $item->sum('denda')
-        ]);
-
-        return $pdf->stream();
-    });
 });
 
+Route::get('report/print/{from}/{until}', function ($from, $until) {
+    $item = Pembayaran::whereBetween('tgl_lunas', [$from, $until])->get();
+
+    $pdf = Pdf::loadView('pdf.report', [
+        'from' => $from,
+        'until' => $until,
+        'items' =>  $item,
+        'total' => $item->sum('subtotal') + $item->sum('ongkir') + $item->sum('denda')
+    ]);
+
+    return $pdf->stream();
+})->middleware([
+    Authenticate::class,
+    UserPimpinan::class,
+]);
 
 Route::post('/checkout/callback', [CheckoutController::class, 'updateStats']);
