@@ -25,8 +25,13 @@ class ListOrder extends Component implements HasForms, HasTable
 
     public function mount()
     {
-        $this->countBelumBayar = Pembayaran::where('tgl_lunas', null)->count();
-        $this->countSudahBayar = Pembayaran::whereNot('tgl_lunas', null)->where('tgl_diterima', null)->count();
+        $pesanan = Pembayaran::query()->whereHas(
+            'pesanan',
+            fn ($query) => $query->where('user_id', auth()->id())
+        );
+
+        $this->countBelumBayar = $pesanan->where('tgl_lunas', null)->count();
+        $this->countSudahBayar = $pesanan->whereNot('tgl_lunas', null)->where('tgl_diterima', null)->count();
     }
 
     public function table(Table $table): Table
