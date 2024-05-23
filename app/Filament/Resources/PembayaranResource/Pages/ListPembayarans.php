@@ -22,7 +22,9 @@ class ListPembayarans extends ListRecords
 
     public function getTabs(): array
     {
-        $countBelumBayar = Pembayaran::where('lunas', false)->count();
+        $countBelumBayar = Pembayaran::where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', true)->where('lunas', false))
+            ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', false))->count();
+
         $countBelumDiantar = Pembayaran::where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', false))
             ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', true)->where('diterima', false))
             ->count();
@@ -32,7 +34,8 @@ class ListPembayarans extends ListRecords
 
             'belum_dibayar' => Tab::make()
                 ->badge($countBelumBayar == 0 ? '' : $countBelumBayar)
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('lunas', false)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', true)->where('lunas', false))
+                    ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', false))),
 
             'belum_diantar' => Tab::make()
                 ->badge($countBelumDiantar == 0 ? '' : $countBelumDiantar)

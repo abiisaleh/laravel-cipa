@@ -31,7 +31,9 @@ class PembayaranResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $countLunas = static::getModel()::where('lunas', false)->count();
+        $countLunas = static::getModel()::where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', true)->where('lunas', false))
+            ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', false))->count();
+
         $countDiantar = static::getModel()::where(fn ($query) => $query->where('metode', 'Cash')->where('diterima', false))
             ->orWhere(fn ($query) => $query->whereNot('metode', 'Cash')->where('lunas', true)->where('diterima', false))
             ->count();
@@ -101,13 +103,13 @@ class PembayaranResource extends Resource
 
 
                     Forms\Components\Section::make([
-                        Forms\Components\Toggle::make('lunas')->disabled(function (Pembayaran $record) {
+                        Forms\Components\Toggle::make('lunas')->hidden(function (Pembayaran $record) {
                             if (auth()->user()->role == 'petugas')
                                 return true;
 
                             return $record->metode != 'Cash';
                         }),
-                        Forms\Components\Toggle::make('diterima')->disabled(auth()->user()->role != 'petugas'),
+                        Forms\Components\Toggle::make('diterima')->hidden(auth()->user()->role != 'petugas'),
                     ])->grow(false)->hidden(auth()->user()->role == 'pimpinan'),
 
                 ])->from('md')->grow()

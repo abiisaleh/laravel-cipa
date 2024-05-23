@@ -34,11 +34,17 @@ class Pembayaran extends Model
 
     protected function denda(): Attribute
     {
-        $persentaseDenda = Setting::where('key', 'persentase_denda')->first()->value;
-        $jumlahBulan = now()->diffInMonths(date_create($this->created_at));
+        if ($this->tgl_diterima) {
+            $persentaseDenda = Setting::where('key', 'persentase_denda')->first()->value / 100;
+            $jumlahBulan = now()->diffInMonths(date_create($this->tgl_diterima));
+
+            return Attribute::make(
+                get: fn () => $this->subtotal * $persentaseDenda * $jumlahBulan
+            );
+        }
 
         return Attribute::make(
-            get: fn () => $this->subtotal * $persentaseDenda * $jumlahBulan
+            get: fn () => 0
         );
     }
 

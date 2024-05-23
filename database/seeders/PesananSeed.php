@@ -27,14 +27,20 @@ class PesananSeed extends Seeder
                     'created_at' => $date->sub(new DateInterval('PT3H'))
                 ]);
 
+            $diterima = fake()->boolean();
+            $lunas = false;
+
+            if ($diterima)
+                $lunas = fake()->boolean();
+
             $pembayaran = Pembayaran::factory()
                 ->create([
                     'subtotal' => $pesanan->harga * $pesanan->qty,
                     'ongkir' => $pesanan->tabung->berat * 10000,
-                    'lunas' => true,
-                    'tgl_lunas' => $date->add(new DateInterval('PT1H')),
-                    'diterima' => true,
-                    'tgl_diterima' => $date->add(new DateInterval('P2D')),
+                    'lunas' => $lunas,
+                    'tgl_lunas' => $lunas ? $date->add(new DateInterval('PT1H')) : null,
+                    'diterima' => $diterima,
+                    'tgl_diterima' => $diterima ? $date->add(new DateInterval('P2D')) : null,
                     'created_at' => $date
                 ]);
 
