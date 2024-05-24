@@ -35,7 +35,7 @@
 
     <x-navbar />
 
-    <main>
+    <main class="min-h-[80vh] md:min-h-[70vh]">
         {{ $slot }}
     </main>
 
@@ -45,7 +45,7 @@
         @livewire('database-notifications')
     @endif
 
-    <footer class="p-4 sm:p-6 ">
+    <footer class="p-4">
         <div class="mx-auto max-w-screen-xl">
             <div class="{{ $active ? 'hidden' : 'md:flex' }} hidden md:justify-between">
                 <div class="mb-6 md:mb-0">

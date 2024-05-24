@@ -14,7 +14,9 @@ class EditProfile extends BaseEditProfile
         return $form
             ->schema([
                 FileUpload::make('avatar')
+                    ->hiddenLabel()
                     ->avatar()
+                    ->alignCenter()
                     ->directory('img/avatar'),
                 $this->getNameFormComponent(),
                 $this->getEmailFormComponent(),

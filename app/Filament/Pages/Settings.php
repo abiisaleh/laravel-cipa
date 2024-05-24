@@ -153,9 +153,8 @@ class Settings extends Page implements HasForms, HasActions, HasTable
             Grid::make()->schema([
                 TextInput::make('name'),
                 TextInput::make('email'),
-                TextInput::make('password')->password()->hiddenOn('edit'),
+                TextInput::make('password')->password()->hiddenOn('edit')->revealable(),
                 Select::make('role')->options([
-                    'pelanggan' => 'pelanggan',
                     'karyawan' => 'karyawan',
                     'petugas' => 'petugas',
                     'pimpinan' => 'pimpinan',

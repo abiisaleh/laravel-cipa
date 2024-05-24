@@ -1,6 +1,6 @@
 <x-layouts.app>
-    <section class=" min-h-[80vh]">
-        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 min-h-[80vh]">
+    <section class="">
+        <div class="grid max-w-screen-xl p-4 mx-auto lg:gap-8 xl:gap-0 lg:grid-cols-12">
             <div class="order-2 md:order-1 mr-auto place-self-center text-center md:text-left lg:col-span-7 mx-auto">
                 <p class="max-w-2xl mb-2 font-semibold lg:mb-4 md:text-lg lg:text-xl">
                     <span class="animate-wave inline-block transform origin-bottom-right">👋</span> Hi! Selamat datang,

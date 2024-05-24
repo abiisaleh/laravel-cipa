@@ -1,4 +1,4 @@
-<section class=" min-h-[80vh]">
+<section class="">
     <div class="py-16 px-4 mx-auto max-w-screen-xl text-left">
         <div class="sm:flex sm:items-center justify-between mb-8">
             <div class="">

@@ -84,7 +84,7 @@ class CheckoutController extends Controller
             $batasWaktu = Carbon::parse($getVA["expiration_date"]);
         }
 
-        return view('pembayaran', [
+        return view('checkout-success', [
             'item' => $record,
             'date' => $batasWaktu,
             'va' => $getVA ?? null
