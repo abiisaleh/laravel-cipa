@@ -18,28 +18,28 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         \App\Models\User::factory()->create([
-            'name' => 'Petugas Gudang',
+            'name' => 'Roland Nanlohy',
             'email' => 'petugas@demo.com',
             'password' => 'demo1234',
             'role' => 'petugas'
         ]);
 
         \App\Models\User::factory()->create([
-            'name' => 'Karyawan',
+            'name' => 'Evan Yahya',
             'email' => 'karyawan@demo.com',
             'password' => 'demo1234',
             'role' => 'karyawan'
         ]);
 
         \App\Models\User::factory()->create([
-            'name' => 'Kepala Pimpinan',
+            'name' => 'Sendy Pasorong',
             'email' => 'kepala@demo.com',
             'password' => 'demo1234',
             'role' => 'pimpinan'
         ]);
 
         $pelanggan = \App\Models\User::factory()->create([
-            'name' => 'Pelanggan',
+            'name' => 'Rina Kristono',
             'email' => 'pelanggan@demo.com',
             'password' => 'demo1234',
             'role' => 'pelanggan',
