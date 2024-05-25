@@ -152,8 +152,10 @@
                         @if ($record->trashed())
                             {{ $this->restoreAction }}
                         @else
-                            @if (!$record->lunas & !$record->diterima)
-                                {{ $this->deleteAction }}
+                            @if (!$record->lunas)
+                                @if (!$record->diterima)
+                                    {{ $this->deleteAction }}
+                                @endif
 
                                 {{ $this->checkoutAction }}
                             @endif
@@ -168,6 +170,4 @@
 
         <x-filament-actions::modals />
     </div>
-
-
 </section>
