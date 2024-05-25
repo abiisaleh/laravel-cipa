@@ -144,8 +144,6 @@
                         <x-list-timeline icon="heroicon-o-shopping-cart" :text="date_create($record->created_at)->format('d M Y, h:i')">
                             Pesanan Dibuat
                         </x-list-timeline>
-
-
                     </ol>
 
                     <div class="gap-4 flex-col flex sm:flex-row sm:items-center" id="btn-timeline">
@@ -161,9 +159,6 @@
                             @endif
                         @endif
                     </div>
-
-
-
                 </div>
             </div>
         </div>
