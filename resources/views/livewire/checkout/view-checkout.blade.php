@@ -56,9 +56,9 @@
                             dengan nomor Virtual Account yang sama.</p>
                         <p>Hanya menerima Bank {{ ucfirst($record->metode) }}</p>
 
-                        <p class=" bg-info-50 p-2 mt-8 flex items-center justify-center">
-                            Untuk mensimulasikan pembayaran klik 💳 {{ $this->simulateAction }}
-                        </p>
+                        <div class="bg-info-50 p-2 mt-8 flex items-center justify-center text-center">
+                            <p class="">Untuk mensimulasikan pembayaran klik {{ $this->simulateAction }}</p>
+                        </div>
                 @endif
 
             </div>

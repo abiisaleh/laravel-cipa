@@ -41,7 +41,7 @@ class ViewCheckout extends Component implements HasForms, HasActions
     public function simulateAction(): Action
     {
         return Action::make('simulate')
-            ->label('Bayar sekarang.')
+            ->label('💳 Bayar sekarang.')
             ->link()
             ->action(function () {
                 Http::withHeader('content-type', 'application/json')
