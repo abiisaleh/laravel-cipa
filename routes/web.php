@@ -6,6 +6,8 @@ use App\Http\Middleware\DatabaseNotification;
 use App\Http\Middleware\UserPelanggan;
 use App\Http\Middleware\UserPimpinan;
 use App\Http\Middleware\UserVerification;
+use App\Livewire\Checkout\PrintCheckout;
+use App\Livewire\Checkout\ViewCheckout;
 use App\Models\Pembayaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
@@ -40,9 +42,8 @@ Route::middleware([
 
     Route::prefix('checkout')->group(function () {
         Route::post('/new', [CheckoutController::class, 'create']);
-        Route::get('/{record}', [CheckoutController::class, 'view']);
-        Route::get('/{record}/simulasi', [CheckoutController::class, 'simulate']);
-        Route::get('/{record}/print', [CheckoutController::class, 'print']);
+        Route::get('/{record}', ViewCheckout::class);
+        Route::get('/{record}/print', PrintCheckout::class);
     });
 });
 
@@ -62,4 +63,4 @@ Route::get('report/print/{from}/{until}', function ($from, $until) {
     UserPimpinan::class,
 ]);
 
-Route::post('/checkout/callback', [CheckoutController::class, 'updateStats']);
+Route::post('/checkout/callback', [CheckoutController::class, 'callback']);

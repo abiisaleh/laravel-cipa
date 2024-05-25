@@ -69,45 +69,7 @@ class CheckoutController extends Controller
         return redirect(url('/checkout', $pembayaran->id));
     }
 
-    public function view(Pembayaran $record)
-    {
-        if ($record->lunas)
-            return redirect('checkout/' . $record->id . '/print');
-
-        $batasWaktu = Carbon::parse($record->created_at)->addDays(30);
-
-        if ($record->metode != 'Cash') {
-            $getVA = Http::withHeader('content-type', 'application/json')
-                ->withBasicAuth(env('XENDIT_API_KEY'), '')
-                ->get('https://api.xendit.co/callback_virtual_accounts/' . $record->va_id)->json();
-
-            $batasWaktu = Carbon::parse($getVA["expiration_date"]);
-        }
-
-        return view('checkout-success', [
-            'item' => $record,
-            'date' => $batasWaktu,
-            'va' => $getVA ?? null
-        ]);
-    }
-
-    public function print(Pembayaran $record)
-    {
-        return view('checkout', ['item' => $record]);
-    }
-
-    public function simulate(Pembayaran $record)
-    {
-        Http::withHeader('content-type', 'application/json')
-            ->withBasicAuth(env('XENDIT_API_KEY'), '')
-            ->post('https://api.xendit.co/callback_virtual_accounts/external_id=' . $record->id . '/simulate_payment', [
-                "amount" => $record->subtotal,
-            ])->json();
-
-        return redirect(url('checkout/' . $record->id . '/print'));
-    }
-
-    public function updateStats()
+    public function callback()
     {
         $data = request()->all();
 

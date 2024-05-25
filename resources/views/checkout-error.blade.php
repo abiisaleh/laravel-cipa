@@ -24,8 +24,6 @@
                             ke pesanan</a>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </section>
