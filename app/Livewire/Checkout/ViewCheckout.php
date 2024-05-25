@@ -49,8 +49,11 @@ class ViewCheckout extends Component implements HasForms, HasActions
                     ->post('https://api.xendit.co/callback_virtual_accounts/external_id=' . $this->record->id . '/simulate_payment', [
                         "amount" => $this->record->subtotal,
                     ])->json();
-                $this->record->va_id = $createVA['id'];
-                $this->record->save();
+                dd(
+$this->record->subtotal,
+$createVA
+);
+         
 
                 sleep(10);
 
