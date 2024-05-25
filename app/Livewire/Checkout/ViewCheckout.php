@@ -50,7 +50,7 @@ class ViewCheckout extends Component implements HasForms, HasActions
                         "amount" => $this->record->subtotal,
                     ])->json();
                 $this->record->va_id = $createVA['id'];
-                $this->record->save()
+                $this->record->save();
 
                 sleep(10);
 
