@@ -44,11 +44,13 @@ class ViewCheckout extends Component implements HasForms, HasActions
             ->label('💳 Bayar sekarang.')
             ->link()
             ->action(function () {
-                Http::withHeader('content-type', 'application/json')
+                $createVA = Http::withHeader('content-type', 'application/json')
                     ->withBasicAuth(env('XENDIT_API_KEY'), '')
                     ->post('https://api.xendit.co/callback_virtual_accounts/external_id=' . $this->record->id . '/simulate_payment', [
                         "amount" => $this->record->subtotal,
                     ])->json();
+                $this->record->va_id = $createVA['id'];
+                $this->record->save()
 
                 sleep(10);
 
