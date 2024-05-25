@@ -25,7 +25,7 @@ class ViewCheckout extends Component implements HasForms, HasActions
     public function mount()
     {
         if ($this->record->lunas)
-            return $this->view = view('livewire.checkout.success-checkout');
+            return redirect(url('checkout/' . $this->record->id . '/print'));
 
         $this->date = Carbon::parse($this->record->created_at)->addDays(30);
 
