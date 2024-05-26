@@ -95,12 +95,12 @@ class ViewOrder extends Component implements HasForms, HasActions
                 ])
                 ->action(function (array $data) {
                     $this->record->metode = $data['metode'];
-                    $this->record->save();
+                    $id = $this->record->id;
 
                     $createVA = Http::withHeader('content-type', 'application/json')
                         ->withBasicAuth(env('XENDIT_API_KEY'), '')
                         ->post('https://api.xendit.co/callback_virtual_accounts', [
-                            "external_id" => "$this->record->id",
+                            "external_id" => "$id",
                             "bank_code" => str_replace(' ', '_', strtoupper($data['metode'])),
                             "name" => auth()->user()->name,
                             "is_single_use" => true,

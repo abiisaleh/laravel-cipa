@@ -60,7 +60,6 @@
                             <p class="">Untuk mensimulasikan pembayaran klik {{ $this->simulateAction }}</p>
                         </div>
                 @endif
-
             </div>
         </div>
 </section>
