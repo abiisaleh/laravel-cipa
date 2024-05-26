@@ -50,7 +50,7 @@ class ViewCheckout extends Component implements HasForms, HasActions
                         "amount" => $this->record->subtotal,
                     ])->json();
 
-                sleep(10);
+                sleep(5);
 
                 return redirect(url('checkout/' . $this->record->id . '/print'));
             });
