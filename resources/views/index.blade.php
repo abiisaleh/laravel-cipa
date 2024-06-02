@@ -12,12 +12,12 @@
                     Yuk, pesan sekarang di website kami! Cepat, mudah, dan bisa diandalkan.</p>
                 <div class="md:flex">
                     <a href="{{ filament()->getRegistrationUrl() }}"
-                        class="btn-shadow btn-shadow-primary w-full md:w-auto transition-all ease-in-out border-primary-900 inline-flex items-center justify-center px-6 py-3 mr-3 text-base font-medium text-center text-white rounded-full bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300">
+                        class="btn-shadow btn-shadow-primary w-full md:w-auto transition-all ease-in-out border-primary-900 inline-flex items-center justify-center px-8 py-3 mr-3 text-base font-medium text-center text-white rounded-full bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300">
                         Ayo gabung!
                         @svg('heroicon-s-arrow-right', ['class' => 'w-5 h-5 ml-2 -mr-1'])
                     </a>
                     <a href="{{ filament()->getLoginUrl() }}"
-                        class="btn-shadow btn-shadow-white transition-all ease-in-out block mt-2 w-full md:w-auto md:mt-0 md:inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-full bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-100">
+                        class="btn-shadow btn-shadow-white transition-all ease-in-out block mt-2 w-full md:w-auto md:mt-0 md:inline-flex items-center justify-center px-8 py-3 text-base font-medium text-center text-gray-900 border border-gray-300 rounded-full bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-100">
                         Masuk
                     </a>
                 </div>
