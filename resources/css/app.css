@@ -6,3 +6,16 @@
     display: flex;
     width: 100%;
 }
+
+.btn-shadow-primary {
+    box-shadow: 0 4px theme('colors.primary.900');
+}
+
+.btn-shadow-white {
+    box-shadow: 0 4px theme('colors.gray.300');
+}
+
+.btn-shadow:hover {
+    transform: translateY(4px);
+    box-shadow: 0 0;
+}
