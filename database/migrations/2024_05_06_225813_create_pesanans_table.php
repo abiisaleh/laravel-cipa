@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignIdFor(App\Models\User::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(App\Models\Tabung::class)->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(App\Models\Pembayaran::class)->nullable()->constrained()->cascadeOnDelete();
-            $table->string('nama');
+            $table->string('tabung');
             $table->integer('harga');
             $table->integer('qty')->default(1);
             $table->integer('subtotal')->virtualAs('harga * qty');

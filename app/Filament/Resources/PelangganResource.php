@@ -40,10 +40,10 @@ class PelangganResource extends Resource
         return $form
             ->schema([
                 Section::make([
-                    TextInput::make('instansi')->disabled(),
-                    TextInput::make('alamat_kantor')->disabled(),
-                    TextInput::make('telp_kantor')->disabled(),
-                    TextInput::make('email_kantor')->disabled(),
+                    TextInput::make('instansi')->readOnly(),
+                    TextInput::make('alamat_kantor')->readOnly(),
+                    TextInput::make('telp_kantor')->readOnly(),
+                    TextInput::make('email_kantor')->readOnly(),
                     Toggle::make('verified')->label('Data yang dimasukkan sudah benar'),
                 ])
             ]);

@@ -29,7 +29,7 @@ class ViewCheckout extends Component implements HasForms, HasActions
 
         $this->date = Carbon::parse($this->record->created_at)->addDays(30);
 
-        if ($this->record->metode != 'Cash') {
+        if ($this->record->metode != 'tunai') {
             $this->va = Http::withHeader('content-type', 'application/json')
                 ->withBasicAuth(env('XENDIT_API_KEY'), '')
                 ->get('https://api.xendit.co/callback_virtual_accounts/' . $this->record->va_id)->json();

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\HargaTabung;
 use App\Models\Tabung;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -14,10 +15,11 @@ class TabungTersedia extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(Tabung::query()->where('stok', '>', 0))
+            ->query(HargaTabung::query())
             ->columns([
-                TextColumn::make('fullName')->label('Jenis'),
+                TextColumn::make('nama')->label('Tabung'),
                 TextColumn::make('stok')->sortable()
-            ])->defaultSort('stok', 'desc');
+            ]);
+        // ])->defaultSort('stok', 'desc');
     }
 }

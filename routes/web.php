@@ -41,7 +41,6 @@ Route::middleware([
     });
 
     Route::prefix('checkout')->group(function () {
-        Route::post('/new', [CheckoutController::class, 'create']);
         Route::get('/{record}', ViewCheckout::class);
         Route::get('/{record}/print', PrintCheckout::class);
     });

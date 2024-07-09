@@ -3,21 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TabungResource\Pages;
-use App\Filament\Resources\TabungResource\RelationManagers;
+use App\Models\HargaTabung;
 use App\Models\Tabung;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TabungResource extends Resource
 {
@@ -25,30 +26,23 @@ class TabungResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-beaker';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'Gudang';
+
+    protected static ?int $navigationSort = 4;
+
+    protected static ?string $recordTitleAttribute = 'kode';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Select::make('jenis')->options(
-                    [
-                        'oksigen' => 'Oksigen',
-                        'nitrogen' => 'Nitrogen'
-                    ]
-                )->disabled(auth()->user()->role != 'karyawan'),
-                Select::make('ukuran')->options(
-                    [
-                        'kecil' => 'Kecil',
-                        'sedang' => 'Sedang',
-                        'besar' => 'Besar'
-                    ]
-                )->disabled(auth()->user()->role != 'karyawan'),
-                TextInput::make('harga_full')->prefix('Rp. ')->numeric()->disabled(auth()->user()->role != 'karyawan'),
-                TextInput::make('harga_refill')->prefix('Rp. ')->numeric()->disabled(auth()->user()->role != 'karyawan'),
-                TextInput::make('harga_kosong')->prefix('Rp. ')->numeric()->disabled(auth()->user()->role != 'karyawan'),
-
-                TextInput::make('stok')->numeric(),
+                Select::make('harga_tabung_id')
+                    ->label('Tabung')
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set, $state) => $set('kode', HargaTabung::find($state)->kode . str_pad((Tabung::where('harga_tabung_id', $state)->count() + 1), 2, '0', STR_PAD_LEFT)))
+                    ->relationship('hargaTabung')
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->jenisTabung->jenis} {$record->ukuranTabung->ukuran}"),
+                TextInput::make('jumlah')->numeric()->default(1)->minValue(1)->maxValue(99)->required(),
             ]);
     }
 
@@ -56,19 +50,27 @@ class TabungResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('kode'),
-                TextColumn::make('jenis'),
-                TextColumn::make('ukuran'),
-                TextColumn::make('harga_full')->prefix('Rp. ')->numeric(),
-                TextColumn::make('harga_refill')->prefix('Rp. ')->numeric(),
-                TextColumn::make('harga_kosong')->prefix('Rp. ')->numeric(),
-                TextColumn::make('stok')->numeric(),
+                TextColumn::make('kode')->searchable(),
+                TextColumn::make('hargaTabung.jenisTabung.jenis'),
+                TextColumn::make('hargaTabung.ukuranTabung.ukuran'),
+                ToggleColumn::make('active'),
+                IconColumn::make('digunakan')->boolean(),
             ])
             ->filters([
-                //
+                SelectFilter::make('jenis_tabung_id')
+                    ->relationship('hargaTabung.jenisTabung', 'jenis')
+                    ->preload()
+                    ->label('Jenis'),
+                SelectFilter::make('ukuran_tabung_id')
+                    ->relationship('hargaTabung.jenisTabung', 'jenis')
+                    ->preload()
+                    ->label('Ukuran'),
+                TernaryFilter::make('active'),
+                TernaryFilter::make('used'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -77,43 +79,15 @@ class TabungResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTabungs::route('/'),
-            'create' => Pages\CreateTabung::route('/create'),
-            'edit' => Pages\EditTabung::route('/{record}/edit'),
+            'index' => Pages\ManageTabungs::route('/'),
         ];
     }
 
-    public static function canCreate(): bool
+    public static function canEdit(Model $record): bool
     {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
-        return false;
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
-        return false;
-    }
-
-    public static function canDeleteAny(): bool
-    {
-        if (auth()->user()->role == 'karyawan')
-            return true;
-
         return false;
     }
 }

@@ -2,146 +2,193 @@
 
 namespace App\Livewire\Order;
 
+use App\Models\HargaTabung;
 use App\Models\Pesanan;
+use App\Models\Tabung;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Wizard\Step;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Support\RawJs;
+use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
-class CreateOrder extends Component
+class CreateOrder extends Component implements HasForms, HasActions
 {
-    public $items = [];
-    public string $jenis = '';
-    public string $ukuran = '';
-    public string $isi = '';
+    use InteractsWithForms;
+    use InteractsWithActions;
 
-    public array $tabung = [];
-    public array $berat = [];
-    public int $harga = 0;
-    public int $qty = 1;
-    public int $stok = 0;
+    public ?array $data = [];
 
-    public int $subtotal = 0;
-    public int $ongkir;
-
-    public int $countItems = 0;
-
-    public function mount()
+    public function mount(): void
     {
-        $this->items = \App\Models\Pesanan::with('tabung')
-            ->whereNull('pembayaran_id')
-            ->where('user_id', auth()->id())
-            ->get();
-
-        $this->countItems = Pesanan::with('tabung')
-            ->whereNull('pembayaran_id')
-            ->where('user_id', auth()->id())->count();
-
-        $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
-
-        $this->ongkir = 0;
-
-        $this->items->each(function ($item) use (&$hargaOngkir) {
-            $this->ongkir += $item->tabung->berat * $hargaOngkir * $item->qty;
-        });
-
-        $this->subtotal = $this->items->sum('subtotal');
+        $this->form->fill();
     }
 
-    public function cekTabung()
+    public function form(Form $form): Form
     {
-        $tabung = \App\Models\Tabung::where('jenis', $this->jenis)
-            ->get()
-            ->each(function ($item) {
-                $this->berat[$item->ukuran] = $item->berat;
-            });
+        return $form
+            ->schema([
+                Wizard::make([
+                    Step::make('Pesanan')
+                        ->icon('heroicon-m-shopping-bag')
+                        ->schema([
+                            Repeater::make('items')
+                                ->hiddenLabel()
+                                ->collapsible()
+                                ->columns(2)
+                                ->schema([
+                                    Select::make('tabung')
+                                        ->searchable()
+                                        ->required()
+                                        ->live()
+                                        ->options(fn (): array => HargaTabung::all()->pluck('nama', 'id')->toArray()),
+
+                                    Select::make('isi')
+                                        ->required()
+                                        ->disabled(fn (Get $get) => $get('tabung') == null)
+                                        ->options([
+                                            'full' => 'Full',
+                                            'refill' => 'Refill',
+                                            'kosong' => 'Kosong'
+                                        ])
+                                        ->live()
+                                        ->afterStateUpdated(function (Get $get, Set $set, string $state) {
+                                            if ($state == 'full')
+                                                $harga = HargaTabung::find($get('tabung'))->harga_full;
+                                            if ($state == 'refill')
+                                                $harga = HargaTabung::find($get('tabung'))->harga_refill;
+                                            if ($state == 'kosong')
+                                                $harga = HargaTabung::find($get('tabung'))->harga_kosong;
+
+                                            $set('subtotal', $harga);
+                                            $set('harga', $harga);
+                                        }),
+
+                                    Fieldset::make()
+                                        ->columns(3)
+                                        ->schema([
+                                            TextInput::make('harga')
+                                                ->default(0)
+                                                ->prefix('Rp')
+                                                ->disabled(),
+
+                                            TextInput::make('qty')
+                                                ->live()
+                                                ->afterStateUpdated(fn (Get $get, Set $set, int $state) => $set('subtotal', $get('harga') * $state))
+                                                ->required()
+                                                ->numeric()
+                                                ->default(0)
+                                                ->minValue(1)
+                                                ->maxValue(99),
+
+                                            TextInput::make('subtotal')
+                                                ->default(0)
+                                                ->prefix('Rp')
+                                                ->disabled()
+                                        ])
+                                ])
+                                ->afterStateUpdated(function (Set $set, array $state) {
+                                    $subtotalItems = 0;
+                                    $ongkir = 0;
+                                    $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
+
+                                    foreach ($state as $item) {
+                                        $subtotalItems += $item['subtotal'];
+                                        $beratTabung = HargaTabung::find($item['tabung'])->ukuranTabung->berat ?? 0;
+                                        $ongkir += $beratTabung * $hargaOngkir * $item['qty'];
+                                    }
+
+                                    $set('subtotal_items', $subtotalItems);
+                                    $set('ongkos_kirim', $ongkir);
+                                    $set('total', $subtotalItems + $ongkir);
+                                }),
+                        ]),
+                    Step::make('Pembayaran')
+                        ->icon('heroicon-m-credit-card')
+                        ->schema([
+                            TextInput::make('subtotal_items')->inlineLabel()->disabled()->prefix('Rp'),
+                            TextInput::make('ongkos_kirim')->inlineLabel()->disabled()->prefix('Rp'),
+                            TextInput::make('total')->inlineLabel()->disabled()->prefix('Rp'),
+                            ToggleButtons::make('metode_pembayaran')
+                                ->inline()
+                                ->inlineLabel()
+                                ->required()
+                                ->options(
+                                    [
+                                        'BCA' => 'BCA',
+                                        'BNI' => 'BNI',
+                                        'BRI' => 'BRI',
+                                        'Mandiri' => 'Mandiri',
+                                        'tunai' => 'Tunai',
+                                    ]
+
+                                )
+                        ])
+
+                ])->submitAction($this->checkout())
+            ])
+            ->statePath('data');
     }
 
-    public function cekUkuran()
+    public function checkout(): Action
     {
-        $this->tabung = \App\Models\Tabung::where('jenis', $this->jenis)
-            ->where('ukuran', $this->ukuran)
-            ->firstOrFail()
-            ->attributesToArray();
+        return Action::make('checkout')->extraAttributes(['type' => 'submit']);
     }
 
-    public function cekHarga($isi)
+    public function create()
     {
-        $this->isi = $isi;
-        $this->harga;
-        $this->stok = $this->tabung['stok'];
-    }
-
-    public function increment()
-    {
-        if ($this->stok > $this->qty)
-            $this->qty++;
-    }
-
-    public function decrement()
-    {
-        if ($this->qty > 0)
-            $this->qty--;
-    }
-
-    public function addToCart()
-    {
-        $tabung = \App\Models\Tabung::where('jenis', $this->jenis)
-            ->where('ukuran', $this->ukuran)
-            ->firstOrFail();
-
-        $namaTabung = implode(' ', [
-            'tabung',
-            $tabung->jenis,
-            $tabung->ukuran,
-            $this->isi
+        $pembayaran = \App\Models\Pembayaran::create([
+            'metode' => $this->data['metode_pembayaran'],
+            'subtotal' => $this->data['total'],
+            'ongkir' => $this->data['ongkos_kirim'],
         ]);
 
-        $pesanan = \App\Models\Pesanan::where('nama', $namaTabung)
-            ->where('pembayaran_id', null)
-            ->first();
+        foreach ($this->data['items'] as $item) {
+            $tabung = Tabung::find($item['tabung']);
+            $tabung->update(['digunakan' => true]);
+            $isi = $item['isi'];
 
-        //cek stok pesanan selain refill
-        if ($this->isi != 'refill')
-            if ($tabung->stok < $this->qty) {
-                // kalau ada stok yang kurang tampilkan error
-                return \Filament\Notifications\Notification::make()
-                    ->title('Stok tidak cukup')
-                    ->body('sisa tabung tersedia ' . $tabung->stok)
-                    ->danger()
-                    ->send();
-            }
-
-        if ($pesanan === null) {
-            \App\Models\Pesanan::create([
+            Pesanan::create([
                 'user_id' => auth()->id(),
                 'tabung_id' => $tabung->id,
-                'nama' => $namaTabung,
-                'harga' => $this->harga,
-                'qty' => $this->qty
+                'pembayaran_id' => $pembayaran->id,
+                'tabung' => "{$tabung->nama} {$isi}",
+                'harga' => $item['harga'],
+                'qty' => $item['qty'],
             ]);
-        } else {
-            $pesanan->qty += $this->qty;
-            $pesanan->save();
         }
 
-        \Filament\Notifications\Notification::make()
-            ->title('Item ditambahkan')
-            ->icon('heroicon-s-shopping-cart')
-            ->iconColor('info')
-            ->send();
+        if ($this->data['metode_pembayaran'] != 'tunai') {
+            $createVA = Http::withHeader('content-type', 'application/json')
+                ->withBasicAuth(env('XENDIT_API_KEY'), '')
+                ->post('https://api.xendit.co/callback_virtual_accounts', [
+                    "external_id" => "$pembayaran->id",
+                    "bank_code" => str_replace(' ', '_', strtoupper($this->data['metode_pembayaran'])),
+                    "name" => auth()->user()->name,
+                    "is_single_use" => true,
+                    "is_closed" => true,
+                    "expected_amount" => $pembayaran->subtotal,
+                    "expiration_date" => now()->addDay(),
+                ])->json();
 
-        $this->mount();
-    }
+            $pembayaran->va_id = $createVA['id'];
+            $pembayaran->save();
+        }
 
-    public function delete(\App\Models\Pesanan $record)
-    {
-        $record->delete();
-
-        $this->mount();
-
-        \Filament\Notifications\Notification::make()
-            ->title('Item dihapus')
-            ->icon('heroicon-s-trash')
-            ->iconColor('danger')
-            ->send();
+        return redirect(url('/checkout', $pembayaran->id));
     }
 
     public function render()

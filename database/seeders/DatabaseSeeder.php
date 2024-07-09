@@ -45,39 +45,39 @@ class DatabaseSeeder extends Seeder
             'role' => 'pelanggan',
         ]);
 
-        $jenis = ['oksigen', 'nitrogen'];
-        $tabung = [
-            'kecil' => [350000, 200000, 150000],
-            'sedang' => [500000, 250000, 250000],
-            'besar' => [750000, 350000, 400000]
+        $jenisTabung = [
+            [
+                'kode' => 6,
+                'jenis' => 'oksigen',
+            ],
+            [
+                'kode' => 7,
+                'jenis' => 'nitrogen',
+            ],
+
         ];
 
-        foreach ($jenis as $Jenis) {
-            foreach ($tabung as $ukuran => $harga) {
-                //kodefikasi
-                $kode_jenis = [
-                    'oksigen' => '6',
-                    'nitrogen' => '7'
-                ];
-                $kode_ukuran = [
-                    'kecil' => '200',
-                    'sedang' => '300',
-                    'besar' => '400'
-                ];
+        DB::table('jenis_tabungs')->insert($jenisTabung);
 
-                $data[] = [
-                    'kode' => $kode_jenis[$Jenis] . $kode_ukuran[$ukuran],
-                    'jenis' => $Jenis,
-                    'ukuran' => $ukuran,
-                    'stok' => 100,
-                    'harga_full' => $harga[0],
-                    'harga_refill' => $harga[1],
-                    'harga_kosong' => $harga[2]
-                ];
-            }
-        }
+        $ukuranTabung = [
+            [
+                'kode' => 2,
+                'ukuran' => 'kecil',
+                'berat' => 1,
+            ],
+            [
+                'kode' => 3,
+                'ukuran' => 'sedang',
+                'berat' => 2,
+            ],
+            [
+                'kode' => 4,
+                'ukuran' => 'besar',
+                'berat' => 3,
+            ],
+        ];
 
-        DB::table('tabungs')->insert($data);
+        DB::table('ukuran_tabungs')->insert($ukuranTabung);
 
         DB::table('pelanggans')->insert([
             'user_id' => $pelanggan->id,
@@ -106,24 +106,24 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $tabung = DB::table('tabungs')->inRandomOrder()->first();
-        $qty = rand(1, 10);
+        // $tabung = DB::table('tabungs')->inRandomOrder()->first();
+        // $qty = rand(1, 10);
 
-        DB::table('pembayarans')->insert([
-            'metode' => 'Cash',
-            'subtotal' => $qty * $tabung->harga_refill,
-            'ongkir' => $tabung->berat * 10000,
-            'created_at' => now(),
-        ]);
+        // DB::table('pembayarans')->insert([
+        //     'metode' => 'Cash',
+        //     'subtotal' => $qty * $tabung->harga_refill,
+        //     'ongkir' => $tabung->berat * 10000,
+        //     'created_at' => now(),
+        // ]);
 
-        DB::table('pesanans')->insert([
-            'tabung_id' => $tabung->id,
-            'user_id' =>  $pelanggan->id,
-            'pembayaran_id' =>  1,
-            'nama' => 'tabung ' . $tabung->jenis . ' ' . $tabung->ukuran . ' refill',
-            'harga' => $tabung->harga_refill,
-            'qty' => $qty,
-            'created_at' => now()->subHour(),
-        ]);
+        // DB::table('pesanans')->insert([
+        //     'tabung_id' => $tabung->id,
+        //     'user_id' =>  $pelanggan->id,
+        //     'pembayaran_id' =>  1,
+        //     'nama' => 'tabung ' . $tabung->jenis . ' ' . $tabung->ukuran . ' refill',
+        //     'harga' => $tabung->harga_refill,
+        //     'qty' => $qty,
+        //     'created_at' => now()->subHour(),
+        // ]);
     }
 }

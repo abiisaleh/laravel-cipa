@@ -24,8 +24,8 @@
             </div>
 
             <div class="py-4">
-                @if ($record->metode == 'Cash')
-                    <p>Pembayaran Tunai (Cash)</p>
+                @if ($record->metode == 'tunai')
+                    <p>Pembayaran Tunai</p>
                     <div class="text-sm py-4">
                         <p class="pb-4 text-danger-600">Harap melakukan pembayaran agar tidak di kenakan denda
                             bulanan sebesar {{ $persentaseDenda ?? 5 }}%.</p>
