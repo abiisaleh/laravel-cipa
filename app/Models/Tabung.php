@@ -12,13 +12,32 @@ class Tabung extends Model
 {
     use HasFactory;
 
-    public function hargaTabung(): BelongsTo
+    protected function nama(): Attribute
     {
-        return $this->belongsTo(HargaTabung::class);
+        return Attribute::make(
+            get: fn () => "{$this->jenisTabung->jenis} {$this->ukuranTabung->ukuran}"
+        );
     }
 
-    public function pesanan(): HasMany
+    protected function stok(): Attribute
     {
-        return $this->hasMany(Pesanan::class);
+        return Attribute::make(
+            get: fn () => $this->stokTabung()->where('active', true)->where('digunakan', false)->count()
+        );
+    }
+
+    public function jenisTabung(): BelongsTo
+    {
+        return $this->belongsTo(JenisTabung::class);
+    }
+
+    public function ukuranTabung(): BelongsTo
+    {
+        return $this->belongsTo(UkuranTabung::class);
+    }
+
+    public function stokTabung(): HasMany
+    {
+        return $this->hasMany(StokTabung::class);
     }
 }

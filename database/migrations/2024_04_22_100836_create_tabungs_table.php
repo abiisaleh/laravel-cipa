@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\HargaTabung;
+use App\Models\JenisTabung;
+use App\Models\UkuranTabung;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,9 +16,11 @@ return new class extends Migration
         Schema::create('tabungs', function (Blueprint $table) {
             $table->id();
             $table->string('kode')->unique();
-            $table->foreignIdFor(HargaTabung::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->boolean('active')->default(true);
-            $table->boolean('digunakan')->default(false);
+            $table->foreignIdFor(JenisTabung::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignIdFor(UkuranTabung::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->integer('harga_full');
+            $table->integer('harga_refill');
+            $table->integer('harga_kosong');
             $table->timestamps();
         });
     }

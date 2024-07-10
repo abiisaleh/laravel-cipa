@@ -9,25 +9,17 @@
                 @foreach ($items as $pesanan)
                     <div class="space-y-4">
                         <div class="flex items-center">
-                            <div class="bg-white flex justify-between w-full  md:p-4 py-6 px-2">
+                            <div class="bg-white flex justify-between w-full p-6 ">
                                 <div class="flex items-center w-full ">
-                                    @if (strpos($pesanan->nama, 'oksigen'))
-                                        <h1
-                                            class=" text-xl p-2 md:p-4 font-bold bg-green-200 text-green-800 rounded-md me-4  w-10 md:w-20 text-center ">
-                                            O₂
-                                        </h1>
-                                    @else
-                                        <h1
-                                            class=" text-xl p-2 md:p-4 font-bold bg-indigo-400 text-indigo-800 rounded-md me-4  w-10 md:w-20 text-center ">
-                                            N
-                                        </h1>
-                                    @endif
-
                                     <div class="w-full">
-                                        <h3 class="font-semibold text-sm md:text-base">{{ $pesanan->nama }}</h3>
                                         <div class="flex justify-between items-center w-full">
-                                            <p class="text-xs md:text-sm">Rp. {{ number_format($pesanan->harga) }}
-                                            </p>
+                                            <div>
+                                                <h3 class="font-semibold text-sm md:text-base">{{ $pesanan->tabung }}
+                                                </h3>
+                                                <p class="text-xs md:text-sm">Rp. {{ number_format($pesanan->harga) }}
+                                                </p>
+                                            </div>
+
                                             <div class="flex items-center">
                                                 <h3 class="md:text-base mx-2 text-sm w-10">
                                                     x{{ number_format($pesanan->qty) }}</h3>

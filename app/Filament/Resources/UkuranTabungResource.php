@@ -21,7 +21,7 @@ class UkuranTabungResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-scale';
 
-    protected static ?string $navigationGroup = 'Gudang';
+    protected static ?string $navigationGroup = 'Data master';
 
     protected static ?int $navigationSort = 2;
 

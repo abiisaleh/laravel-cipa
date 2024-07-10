@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Order;
 
-use App\Models\HargaTabung;
 use App\Models\Pesanan;
+use App\Models\StokTabung;
 use App\Models\Tabung;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -11,7 +11,6 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Wizard;
@@ -21,7 +20,6 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Support\RawJs;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
@@ -46,15 +44,17 @@ class CreateOrder extends Component implements HasForms, HasActions
                         ->icon('heroicon-m-shopping-bag')
                         ->schema([
                             Repeater::make('items')
+                                ->reorderable(false)
                                 ->hiddenLabel()
-                                ->collapsible()
                                 ->columns(2)
                                 ->schema([
                                     Select::make('tabung')
                                         ->searchable()
                                         ->required()
                                         ->live()
-                                        ->options(fn (): array => HargaTabung::all()->pluck('nama', 'id')->toArray()),
+                                        ->options(function (): array {
+                                            return Tabung::all()->pluck('nama', 'id')->toArray();
+                                        }),
 
                                     Select::make('isi')
                                         ->required()
@@ -66,12 +66,12 @@ class CreateOrder extends Component implements HasForms, HasActions
                                         ])
                                         ->live()
                                         ->afterStateUpdated(function (Get $get, Set $set, string $state) {
-                                            if ($state == 'full')
-                                                $harga = HargaTabung::find($get('tabung'))->harga_full;
-                                            if ($state == 'refill')
-                                                $harga = HargaTabung::find($get('tabung'))->harga_refill;
-                                            if ($state == 'kosong')
-                                                $harga = HargaTabung::find($get('tabung'))->harga_kosong;
+
+                                            match ($state) {
+                                                'full' => $harga = Tabung::find($get('tabung'))->harga_full,
+                                                'refill' => $harga = Tabung::find($get('tabung'))->harga_refill,
+                                                'kosong' => $harga = Tabung::find($get('tabung'))->harga_kosong
+                                            };
 
                                             $set('subtotal', $harga);
                                             $set('harga', $harga);
@@ -92,7 +92,13 @@ class CreateOrder extends Component implements HasForms, HasActions
                                                 ->numeric()
                                                 ->default(0)
                                                 ->minValue(1)
-                                                ->maxValue(99),
+                                                ->maxValue(fn (Get $get) => Tabung::find($get('tabung'))->stok ?? 0)
+                                                ->hint(function (Get $get) {
+                                                    if ($get('isi') == 'refill')
+                                                        return;
+                                                    $stokTersedia = Tabung::find($get('tabung'))->stok ?? 0;
+                                                    return "stok {$stokTersedia}";
+                                                }),
 
                                             TextInput::make('subtotal')
                                                 ->default(0)
@@ -107,7 +113,7 @@ class CreateOrder extends Component implements HasForms, HasActions
 
                                     foreach ($state as $item) {
                                         $subtotalItems += $item['subtotal'];
-                                        $beratTabung = HargaTabung::find($item['tabung'])->ukuranTabung->berat ?? 0;
+                                        $beratTabung = Tabung::find($item['tabung'])->ukuranTabung->berat ?? 0;
                                         $ongkir += $beratTabung * $hargaOngkir * $item['qty'];
                                     }
 
@@ -157,8 +163,15 @@ class CreateOrder extends Component implements HasForms, HasActions
         ]);
 
         foreach ($this->data['items'] as $item) {
+
             $tabung = Tabung::find($item['tabung']);
-            $tabung->update(['digunakan' => true]);
+            $stokTabung = StokTabung::whereBelongsTo($tabung)->where('digunakan', false)->get();
+
+            for ($i = 0; $i < $item['qty']; $i++) {
+                $stokTabung[$i]->digunakan = true;
+                $stokTabung[$i]->save();
+            }
+
             $isi = $item['isi'];
 
             Pesanan::create([

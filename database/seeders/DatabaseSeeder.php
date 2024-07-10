@@ -105,25 +105,5 @@ class DatabaseSeeder extends Seeder
                 'value' => $value
             ]);
         }
-
-        // $tabung = DB::table('tabungs')->inRandomOrder()->first();
-        // $qty = rand(1, 10);
-
-        // DB::table('pembayarans')->insert([
-        //     'metode' => 'Cash',
-        //     'subtotal' => $qty * $tabung->harga_refill,
-        //     'ongkir' => $tabung->berat * 10000,
-        //     'created_at' => now(),
-        // ]);
-
-        // DB::table('pesanans')->insert([
-        //     'tabung_id' => $tabung->id,
-        //     'user_id' =>  $pelanggan->id,
-        //     'pembayaran_id' =>  1,
-        //     'nama' => 'tabung ' . $tabung->jenis . ' ' . $tabung->ukuran . ' refill',
-        //     'harga' => $tabung->harga_refill,
-        //     'qty' => $qty,
-        //     'created_at' => now()->subHour(),
-        // ]);
     }
 }

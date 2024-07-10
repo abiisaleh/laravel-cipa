@@ -21,7 +21,7 @@ class JenisTabungResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-eye-dropper';
 
-    protected static ?string $navigationGroup = 'Gudang';
+    protected static ?string $navigationGroup = 'Data master';
 
     protected static ?int $navigationSort = 1;
 
