@@ -31,7 +31,7 @@ class TabungResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-beaker';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -123,5 +123,20 @@ class TabungResource extends Resource
             'create' => Pages\CreateTabung::route('/create'),
             'edit' => Pages\EditTabung::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()->role == 'karyawan';
     }
 }

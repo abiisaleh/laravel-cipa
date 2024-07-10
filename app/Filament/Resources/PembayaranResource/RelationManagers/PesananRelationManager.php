@@ -21,7 +21,8 @@ class PesananRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama'),
+                Tables\Columns\TextColumn::make('tabung'),
+                Tables\Columns\TextColumn::make('kode_tabung'),
                 Tables\Columns\TextColumn::make('qty')->numeric(),
                 Tables\Columns\TextColumn::make('subtotal')->prefix('Rp ')->numeric()
                     ->summarize(Sum::make()),

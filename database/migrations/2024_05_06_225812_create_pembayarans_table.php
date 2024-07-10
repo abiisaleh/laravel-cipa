@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(App\Models\User::class)->nullable()->constrained()->nullOnDelete();
             $table->string('va_id')->nullable();
             $table->string('metode');
             $table->integer('subtotal');

@@ -64,4 +64,9 @@ class JenisTabungResource extends Resource
             'index' => Pages\ManageJenisTabungs::route('/'),
         ];
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
 }

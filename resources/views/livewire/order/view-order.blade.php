@@ -139,9 +139,7 @@
                     </ol>
 
                     <div class="gap-4 flex-col flex sm:flex-row sm:items-center" id="btn-timeline">
-                        @if ($record->trashed())
-                            {{ $this->restoreAction }}
-                        @else
+                        @if (!$record->trashed())
                             @if (!$record->lunas)
                                 @if (!$record->diterima)
                                     {{ $this->deleteAction }}

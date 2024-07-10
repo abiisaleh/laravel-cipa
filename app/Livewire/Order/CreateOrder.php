@@ -5,6 +5,7 @@ namespace App\Livewire\Order;
 use App\Models\Pesanan;
 use App\Models\StokTabung;
 use App\Models\Tabung;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -20,6 +21,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
@@ -112,7 +114,7 @@ class CreateOrder extends Component implements HasForms, HasActions
                                     $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
 
                                     foreach ($state as $item) {
-                                        $subtotalItems += $item['subtotal'];
+                                        $subtotalItems += $item['harga'] * $item['qty'];
                                         $beratTabung = Tabung::find($item['tabung'])->ukuranTabung->berat ?? 0;
                                         $ongkir += $beratTabung * $hargaOngkir * $item['qty'];
                                     }
@@ -157,8 +159,9 @@ class CreateOrder extends Component implements HasForms, HasActions
     public function create()
     {
         $pembayaran = \App\Models\Pembayaran::create([
+            'user_id' => auth()->id(),
             'metode' => $this->data['metode_pembayaran'],
-            'subtotal' => $this->data['total'],
+            'subtotal' => $this->data['subtotal_items'],
             'ongkir' => $this->data['ongkos_kirim'],
         ]);
 
@@ -166,19 +169,21 @@ class CreateOrder extends Component implements HasForms, HasActions
 
             $tabung = Tabung::find($item['tabung']);
             $stokTabung = StokTabung::whereBelongsTo($tabung)->where('digunakan', false)->get();
+            $kodeTabung = [];
 
             for ($i = 0; $i < $item['qty']; $i++) {
                 $stokTabung[$i]->digunakan = true;
                 $stokTabung[$i]->save();
+                $kodeTabung[] = $stokTabung[$i]->kode;
             }
 
             $isi = $item['isi'];
 
             Pesanan::create([
-                'user_id' => auth()->id(),
                 'tabung_id' => $tabung->id,
                 'pembayaran_id' => $pembayaran->id,
                 'tabung' => "{$tabung->nama} {$isi}",
+                'kode_tabung' => $kodeTabung,
                 'harga' => $item['harga'],
                 'qty' => $item['qty'],
             ]);
@@ -193,13 +198,22 @@ class CreateOrder extends Component implements HasForms, HasActions
                     "name" => auth()->user()->name,
                     "is_single_use" => true,
                     "is_closed" => true,
-                    "expected_amount" => $pembayaran->subtotal,
+                    "expected_amount" => $pembayaran->total,
                     "expiration_date" => now()->addDay(),
                 ])->json();
 
             $pembayaran->va_id = $createVA['id'];
             $pembayaran->save();
         }
+
+        Notification::make()
+            ->title('Pesanan dibuat')
+            ->body(function () use ($pembayaran) {
+                $penerima = $pembayaran->user->pelanggan->instansi;
+                $total = number_format($pembayaran->total);
+                return "Total pesanan Rp {$total} oleh {$penerima}";
+            })
+            ->sendToDatabase(User::where('role', '!=', 'pelanggan')->get());
 
         return redirect(url('/checkout', $pembayaran->id));
     }

@@ -69,4 +69,9 @@ class UkuranTabungResource extends Resource
             'index' => Pages\ManageUkuranTabungs::route('/'),
         ];
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
 }

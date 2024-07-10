@@ -81,9 +81,9 @@ class PembayaranResource extends Resource
                             Forms\Components\Placeholder::make('alamat_pengiriman')
                                 ->content(function (Pembayaran $record) {
                                     return str(
-                                        '<b>' . $record->pelanggan->instansi . '</b><br>' .
-                                            $record->pelanggan->telp_kantor . '<br>' .
-                                            '<p class="text-gray-500">' . $record->pelanggan->alamat_kantor . '</p><br>'
+                                        '<b>' . $record->user->pelanggan->instansi . '</b><br>' .
+                                            $record->user->pelanggan->telp_kantor . '<br>' .
+                                            '<p class="text-gray-500">' . $record->user->pelanggan->alamat_kantor . '</p><br>'
                                     )->toHtmlString();
                                 }),
                         ])->grow()->columns(),
@@ -110,7 +110,9 @@ class PembayaranResource extends Resource
                             return $record->metode != 'Cash';
                         }),
                         Forms\Components\Toggle::make('diterima')->hidden(auth()->user()->role != 'petugas'),
-                    ])->grow(false)->hidden(auth()->user()->role == 'pimpinan'),
+                    ])
+                        ->grow(false)
+                        ->hidden(auth()->user()->role == 'pimpinan'),
 
                 ])->from('md')->grow()
             ])->columns(1);
@@ -125,7 +127,7 @@ class PembayaranResource extends Resource
                     ->dateTime('d M Y, h:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')->label('Pemesan'),
-                Tables\Columns\TextColumn::make('pelanggan.instansi')->label('Instansi'),
+                Tables\Columns\TextColumn::make('user.pelanggan.instansi')->label('Instansi'),
                 Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'Cash' ? 'success' : 'primary'),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()

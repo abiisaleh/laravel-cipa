@@ -6,7 +6,7 @@
 
             <div class="flex justify-between py-4 border-b-2 items-center">
                 <p>Total Pembayaran</p>
-                <p class="text-primary-600 font-semibold">Rp {{ number_format($record->subtotal) }}</p>
+                <p class="text-primary-600 font-semibold">Rp {{ number_format($record->total) }}</p>
             </div>
 
             <div class="flex justify-between py-4 border-b-2 items-center">

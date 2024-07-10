@@ -10,6 +10,10 @@ class Pesanan extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'kode_tabung' => 'array',
+    ];
+
     public function tabung(): BelongsTo
     {
         return $this->belongsTo(Tabung::class);

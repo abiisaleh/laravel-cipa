@@ -10,6 +10,17 @@ class EditTabung extends EditRecord
 {
     protected static string $resource = TabungResource::class;
 
+    protected function getFormActions(): array
+    {
+        if (auth()->user()->role == 'karyawan')
+            return [
+                $this->getSaveFormAction(),
+                $this->getCancelFormAction(),
+            ];
+
+        return [];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

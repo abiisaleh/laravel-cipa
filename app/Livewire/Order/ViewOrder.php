@@ -3,6 +3,8 @@
 namespace App\Livewire\Order;
 
 use App\Models\Pembayaran;
+use App\Models\StokTabung;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -37,15 +39,9 @@ class ViewOrder extends Component implements HasForms, HasActions
             ->color('danger')
             ->label('Batalkan Pesanan')
             ->action(function () {
-                //kembalikan stok tiap pesanan
-                foreach ($this->items as $pesanan) {
-                    //cek stok selain refill
-                    if (!strpos($pesanan->nama, 'refill')) {
-                        $tabung = \App\Models\Tabung::find($pesanan->tabung->id);
-                        $tabung->stok += $pesanan->qty;
-                        $tabung->save();
-                    }
-                }
+
+                foreach ($this->record->pesanan as $pesanan)
+                    StokTabung::where('kode', $pesanan->kode_tabung)->update(['digunakan' => false]);
 
                 $this->record->delete();
 
@@ -54,29 +50,21 @@ class ViewOrder extends Component implements HasForms, HasActions
                     ->icon('heroicon-s-trash')
                     ->iconColor('danger')
                     ->send();
-            });
-    }
-
-    public function restoreAction(): Action
-    {
-
-        return Action::make('restore')
-            ->requiresConfirmation()
-            ->label('Pesan Lagi')
-            ->action(function () {
-                $this->record->restore();
 
                 Notification::make()
-                    ->title('Pesanan dibuat ulang')
-                    ->success()
-                    ->send();
+                    ->title('Pesanan dibatalkan')
+                    ->body(function () {
+                        $pesananId = $this->record->id;
+                        $penerima = $this->record->user->pelanggan->instansi;
+                        return "Pesanan #{$pesananId} oleh {$penerima} telah dibatalkan";
+                    })
+                    ->sendToDatabase(User::where('role', '!=', 'pelanggan')->get());
             });
     }
 
     public function checkoutAction(): Action
     {
         if ($this->record->metode == 'Cash')
-            // dd('hahah');
             return Action::make('checkout')
                 ->label('Bayar Sekarang')
                 ->form([
