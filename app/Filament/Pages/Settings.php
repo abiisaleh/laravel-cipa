@@ -218,6 +218,6 @@ class Settings extends Page implements HasForms, HasActions, HasTable
 
     public static function canAccess(): bool
     {
-        return auth()->user()->role == 'karyawan';
+        return auth()->user()->role != 'petugas';
     }
 }
