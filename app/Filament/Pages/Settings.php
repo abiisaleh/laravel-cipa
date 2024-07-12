@@ -215,4 +215,9 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                     ->send();
             });
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
 }
