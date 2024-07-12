@@ -89,7 +89,7 @@ class CreateOrder extends Component implements HasForms, HasActions
 
                                             TextInput::make('qty')
                                                 ->live()
-                                                ->afterStateUpdated(fn (Get $get, Set $set, int $state) => $set('subtotal', $get('harga') * $state))
+                                                ->afterStateUpdated(fn (Get $get, Set $set, int|null $state) => $set('subtotal', $get('harga') * $state ?? 1))
                                                 ->required()
                                                 ->numeric()
                                                 ->default(0)
@@ -114,9 +114,10 @@ class CreateOrder extends Component implements HasForms, HasActions
                                     $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
 
                                     foreach ($state as $item) {
-                                        $subtotalItems += $item['harga'] * $item['qty'];
+                                        $qty = $item['qty'] == null ? 1 : $item['qty'];
+                                        $subtotalItems += $item['harga'] * $qty;
                                         $beratTabung = Tabung::find($item['tabung'])->ukuranTabung->berat ?? 0;
-                                        $ongkir += $beratTabung * $hargaOngkir * $item['qty'];
+                                        $ongkir += $beratTabung * $hargaOngkir * $qty;
                                     }
 
                                     $set('subtotal_items', $subtotalItems);
