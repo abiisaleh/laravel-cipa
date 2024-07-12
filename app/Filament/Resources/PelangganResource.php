@@ -96,7 +96,7 @@ class PelangganResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return auth()->user()->role != 'petugas';
+        return auth()->user()->role == 'karyawan';
     }
 
     public static function canDelete(Model $record): bool

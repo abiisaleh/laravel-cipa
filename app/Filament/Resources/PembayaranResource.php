@@ -143,6 +143,7 @@ class PembayaranResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
@@ -171,6 +172,11 @@ class PembayaranResource extends Resource
     public static function canCreate(): bool
     {
         return false;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->role != 'pimpinan';
     }
 
     public static function canDelete(Model $record): bool

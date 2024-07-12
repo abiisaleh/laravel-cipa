@@ -101,6 +101,7 @@ class TabungResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -128,6 +129,11 @@ class TabungResource extends Resource
     public static function canCreate(): bool
     {
         return auth()->user()->role == 'karyawan';
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->role != 'pimpinan';
     }
 
     public static function canDelete(Model $record): bool
