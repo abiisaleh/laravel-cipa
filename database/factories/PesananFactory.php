@@ -26,11 +26,11 @@ class PesananFactory extends Factory
     /**
      * Configure the model factory.
      */
-    public function configure(): static
-    {
-        return $this->afterMaking(function (Pesanan $record) {
-            $record->nama = 'tabung ' . $record->tabung->jenis . ' ' . $record->tabung->ukuran . ' refill';
-            $record->harga = $record->tabung->harga_refill;
-        });
-    }
+    // public function configure(): static
+    // {
+    //     return $this->afterMaking(function (Pesanan $record) {
+    //         $record->nama = 'tabung ' . $record->tabung->jenis . ' ' . $record->tabung->ukuran . ' refill';
+    //         $record->harga = $record->tabung->harga_refill;
+    //     });
+    // }
 }
