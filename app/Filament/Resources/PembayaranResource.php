@@ -107,7 +107,7 @@ class PembayaranResource extends Resource
                             if (auth()->user()->role == 'petugas')
                                 return true;
 
-                            return $record->metode != 'Cash';
+                            return $record->metode != 'tunai';
                         }),
                         Forms\Components\Toggle::make('diterima')->hidden(auth()->user()->role != 'petugas'),
                     ])
