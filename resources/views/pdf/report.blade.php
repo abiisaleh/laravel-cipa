@@ -18,7 +18,7 @@
                 <tr>
                     <td>{{ $item->created_at }}</td>
                     <td>{{ $item->user->email }}</td>
-                    <td>{{ $item->pelanggan->instansi }}</td>
+                    <td>{{ $item->user->pelanggan->instansi }}</td>
                     <td class="text-right">{{ number_format($item->total) }}</td>
                 </tr>
             @endforeach
