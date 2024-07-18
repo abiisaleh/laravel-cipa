@@ -47,7 +47,7 @@ class ViewCheckout extends Component implements HasForms, HasActions
                 Http::withHeader('content-type', 'application/json')
                     ->withBasicAuth(env('XENDIT_API_KEY'), '')
                     ->post('https://api.xendit.co/callback_virtual_accounts/external_id=' . $this->record->id . '/simulate_payment', [
-                        "amount" => $this->record->subtotal,
+                        "amount" => $this->record->total,
                     ])->json();
 
                 sleep(5);
