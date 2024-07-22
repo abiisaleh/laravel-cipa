@@ -101,6 +101,13 @@ class PembayaranResource extends Resource
                             Forms\Components\Placeholder::make('ongkir')
                                 ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->ongkir)),
                             Forms\Components\Placeholder::make('denda')
+                                ->hintIcon('heroicon-m-question-mark-circle', function (Pembayaran $record) {
+                                    $persentaseDenda = \App\Models\Setting::where('key', 'persentase_denda')->first()->value;
+                                    $jumlahBulan = now()->diffInMonths(date_create($record->tgl_diterima));
+                                    $total = number_format($record->subtotal);
+
+                                    return 'Jumlah Bulan Terlewat × Presentase Denda × Total Pembayaran = ' . $jumlahBulan . ' × ' . $persentaseDenda . '% × ' . $total;
+                                })
                                 ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->denda)),
                             Forms\Components\Placeholder::make('total')
                                 ->content(fn (Pembayaran $record): string => 'Rp ' . number_format($record->total)),
