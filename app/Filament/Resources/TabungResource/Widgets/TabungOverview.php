@@ -12,7 +12,7 @@ class TabungOverview extends BaseWidget
     {
         return [
             Stat::make('Total tabung', StokTabung::all()->count()),
-            Stat::make('Tabung active', StokTabung::where('active', true)->count()),
+            Stat::make('Tabung rusak', StokTabung::where('active', false)->count()),
             Stat::make('Tabung tersedia', StokTabung::where('digunakan', false)->count()),
         ];
     }
