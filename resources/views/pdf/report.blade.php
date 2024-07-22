@@ -2,8 +2,11 @@
 
     <div class="mb-8">
         <h1 class="text-xl font-bold">Laporan Penjualan</h1>
-        <p>Laporan ini dibuat dari {{ $from }} sampai {{ $until }}.
-        </p>
+        @if ($from)
+            <p>Laporan ini dibuat dari {{ $from }} sampai {{ $until }}.</p>
+        @else
+            <p>Laporan ini dibuat pada {{ now() }}.</p>
+        @endif
     </div>
 
     <table class="table mb-8">

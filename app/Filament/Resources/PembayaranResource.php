@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PembayaranResource\Pages;
 use App\Filament\Resources\PembayaranResource\RelationManagers;
 use App\Models\Pembayaran;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -13,11 +15,15 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Blade;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class PembayaranResource extends Resource
 {
@@ -126,8 +132,8 @@ class PembayaranResource extends Resource
                     ->label('Dibuat')
                     ->dateTime('d M Y, h:i')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')->label('Pemesan'),
-                Tables\Columns\TextColumn::make('user.pelanggan.instansi')->label('Instansi'),
+                Tables\Columns\TextColumn::make('user.name')->label('Pemesan')->searchable(),
+                Tables\Columns\TextColumn::make('user.pelanggan.instansi')->label('Instansi')->searchable(),
                 Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'Cash' ? 'success' : 'primary'),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
@@ -139,16 +145,28 @@ class PembayaranResource extends Resource
                     ->boolean(),
             ])
             ->filters([
-                Filter::make('Cash')->query(fn (Builder $query) => $query->where('metode', 'Cash'))
+                Filter::make('tunai')->query(fn (Builder $query) => $query->where('metode', 'tunai')),
+                DateRangeFilter::make('created_at')->label('Dibuat')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkAction::make('cetak')
+                    ->icon('heroicon-m-printer')
+                    ->hidden(auth()->user()->role != 'pimpinan')
+                    ->action(function (Collection $record) {
+                        return response()->streamDownload(function () use ($record) {
+                            echo Pdf::loadHtml(
+                                Blade::render('pdf.report', [
+                                    'from' => null,
+                                    'items' =>  $record,
+                                    'total' => $record->sum('subtotal') + $record->sum('ongkir') + $record->sum('denda')
+                                ])
+                            )->stream();
+                        }, 'Laporan pesanan ' . now() . '.pdf');
+                    }),
             ])
             ->defaultSort('created_at', 'desc');
     }
