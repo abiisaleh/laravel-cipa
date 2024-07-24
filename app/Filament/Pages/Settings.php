@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Ongkir;
 use App\Models\Setting;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -10,11 +11,8 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -28,8 +26,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\File;
 
 class Settings extends Page implements HasForms, HasActions, HasTable
@@ -119,18 +115,6 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                     ->aside()
                     ->description('Data ini digunakan untuk proses biaya  tambahan dalam pemesanan')
                     ->schema([
-                        TextInput::make('ongkir')
-                            ->label('Biaya Ongkir')
-                            ->default(Setting::where('key', 'ongkir')->first()->value)
-                            ->numeric()
-                            ->step(1000)
-                            ->prefix('Rp')
-                            ->suffix('/Kg')
-                            ->helperText(str('Total biaya ongkir yang akan didapatkan pelanggan sebesar **Total Berat Tabung × Biaya Ongkir**.')
-                                ->inlineMarkdown()
-                                ->toHtmlString())
-                            ->required(),
-
                         TextInput::make('denda')
                             ->label('Persentase Denda')
                             ->default(Setting::where('key', 'presentase_denda')->first()->value ?? 5)
@@ -184,20 +168,15 @@ class Settings extends Page implements HasForms, HasActions, HasTable
                 // ...
             ])
             ->actions([
-                EditAction::make()->form($this->formUser())->hidden(auth()->user()->role != 'pimpinan'),
-                DeleteAction::make()->hidden(auth()->user()->role != 'pimpinan'),
+                EditAction::make()->form($this->formUser()),
+                DeleteAction::make(),
             ])
             ->headerActions([
-                CreateAction::make()->form($this->formUser())->hidden(auth()->user()->role != 'pimpinan')
+                CreateAction::make()->form($this->formUser())
             ])
             ->bulkActions([
                 // ...
             ]);
-    }
-
-    public function create(): void
-    {
-        dd($this->form->getState());
     }
 
     public function saveAction(): Action

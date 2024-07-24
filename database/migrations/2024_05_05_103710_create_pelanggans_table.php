@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignIdFor(App\Models\User::class)->nullable()->constrained()->cascadeOnDelete();
             $table->string('instansi');
             $table->string('email_kantor');
+            $table->string('kecamatan');
+            $table->string('kelurahan');
             $table->string('alamat_kantor');
             $table->string('telp_kantor');
             $table->boolean('verified')->default(false);

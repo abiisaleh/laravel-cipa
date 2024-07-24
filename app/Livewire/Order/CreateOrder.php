@@ -111,7 +111,7 @@ class CreateOrder extends Component implements HasForms, HasActions
                                 ->afterStateUpdated(function (Set $set, array $state) {
                                     $subtotalItems = 0;
                                     $ongkir = 0;
-                                    $hargaOngkir = \App\Models\Setting::where('key', 'ongkir')->first()->value;
+                                    $hargaOngkir = \App\Models\Ongkir::where('kecamatan', auth()->user()->pelanggan->kecamatan)->first()->biaya;
 
                                     foreach ($state as $item) {
                                         $qty = $item['qty'] == null ? 1 : $item['qty'];

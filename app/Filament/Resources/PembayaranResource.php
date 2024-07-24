@@ -32,7 +32,7 @@ class PembayaranResource extends Resource
 
     protected static ?string $modelLabel = 'Pesanan';
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?int $navigationSort = 2;
 

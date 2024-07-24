@@ -3,11 +3,8 @@
         {{ $this->form }}
     </form>
 
-
-
-    <div class="">
+    <div>
         {{ $this->saveAction }}
-
     </div>
 
     {{ $this->table }}

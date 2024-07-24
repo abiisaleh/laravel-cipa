@@ -8,6 +8,8 @@ use App\Models\User;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Illuminate\Support\Facades\File;
 use Livewire\Component;
 
 class UserProfile extends Component implements HasForms
@@ -37,6 +39,31 @@ class UserProfile extends Component implements HasForms
                     ->aside()
                     ->schema([
                         \Filament\Forms\Components\TextInput::make('instansi')
+                            ->required(),
+                        \Filament\Forms\Components\Select::make('kecamatan')
+                            ->native(false)
+                            ->options(function () {
+                                $data = File::json('kotajayapura.json');
+                                foreach ($data as $key => $value) {
+                                    $options[$key] = $key;
+                                }
+                                return $options;
+                            })
+                            ->required(),
+                        \Filament\Forms\Components\Select::make('kelurahan')
+                            ->native(false)
+                            ->options(function (Get $get) {
+                                $kecamatan = $get('kecamatan');
+                                $data = File::json('kotajayapura.json');
+                                if (!$kecamatan) {
+                                    return [];
+                                }
+
+                                foreach ($data[$kecamatan] as $item) {
+                                    $options[$item] = $item;
+                                }
+                                return $options;
+                            })
                             ->required(),
                         \Filament\Forms\Components\TextInput::make('alamat_kantor')
                             ->required(),
