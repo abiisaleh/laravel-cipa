@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\File;
 
@@ -66,9 +67,7 @@ class OngkirResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 
@@ -77,5 +76,20 @@ class OngkirResource extends Resource
         return [
             'index' => Pages\ManageOngkirs::route('/'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->role == 'karyawan';
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->role == 'karyawan';
     }
 }
