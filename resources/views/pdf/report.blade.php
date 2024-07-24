@@ -2,35 +2,44 @@
 
     <div class="mb-8">
         <h1 class="text-xl font-bold">Laporan Penjualan</h1>
-        @if ($from)
-            <p>Laporan ini dibuat dari {{ $from }} sampai {{ $until }}.</p>
-        @else
-            <p>Laporan ini dibuat pada {{ now() }}.</p>
-        @endif
+        <p>{{ $subtitle }}</p>
     </div>
 
     <table class="table mb-8">
         <thead>
-            <th>dibuat</th>
-            <th>email</th>
-            <th>instansi</th>
-            <th>total</th>
+            @foreach ($cols as $col => $value)
+                <th>{{ $col }}</th>
+            @endforeach
         </thead>
         <tbody>
-            @foreach ($items as $item)
+            @forelse ($records as $record)
                 <tr>
-                    <td>{{ $item->created_at }}</td>
-                    <td>{{ $item->user->email }}</td>
-                    <td>{{ $item->user->pelanggan->instansi }}</td>
-                    <td class="text-right">{{ number_format($item->total) }}</td>
+                    @foreach ($cols as $value)
+                        @switch($value)
+                            @case('total')
+                                <td class="text-right">{{ number_format(data_get($record, $value)) }}</td>
+                            @break
+
+                            @case('lunas')
+                                <td>{{ (bool) data_get($record, $value) ? 'Ya' : 'Tidak' }}</td>
+                            @break
+
+                            @default
+                                <td>{{ data_get($record, $value) }}</td>
+                        @endswitch
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-        <tfoot class="font-bold">
-            <tr>
-                <td colspan="3">Total Pendapatan</td>
-                <td>{{ number_format($total) }}</td>
-            </tr>
-        </tfoot>
-    </table>
-</x-layouts.pdf>
+                @empty
+                    <tr>
+                        <td colspan="{{ count($cols) }}" class="text-center">Tidak ada data yang ditemukan</td>
+                    </tr>
+                @endforelse
+            </tbody>
+            <tfoot class="font-bold">
+                <tr>
+                    <td colspan="{{ count($cols) - 1 }}">Total Pendapatan</td>
+                    <td>{{ number_format($total) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </x-layouts.pdf>

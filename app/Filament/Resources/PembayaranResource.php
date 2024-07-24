@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
@@ -151,8 +152,11 @@ class PembayaranResource extends Resource
                 Tables\Columns\IconColumn::make('diterima')
                     ->boolean(),
             ])
+            ->searchPlaceholder('Cari Pemesan/Instansi')
             ->filters([
                 Filter::make('tunai')->query(fn (Builder $query) => $query->where('metode', 'tunai')),
+                TernaryFilter::make('lunas'),
+                TernaryFilter::make('diterima'),
                 DateRangeFilter::make('created_at')->label('Dibuat')
             ])
             ->actions([
@@ -163,13 +167,22 @@ class PembayaranResource extends Resource
                 Tables\Actions\BulkAction::make('cetak')
                     ->icon('heroicon-m-printer')
                     ->hidden(auth()->user()->role != 'pimpinan')
-                    ->action(function (Collection $record) {
-                        return response()->streamDownload(function () use ($record) {
+                    ->action(function (Collection $records) {
+                        $recordLunas = $records->where('lunas', true);
+
+                        return response()->streamDownload(function () use ($records, $recordLunas) {
                             echo Pdf::loadHtml(
                                 Blade::render('pdf.report', [
-                                    'from' => null,
-                                    'items' =>  $record,
-                                    'total' => $record->sum('subtotal') + $record->sum('ongkir') + $record->sum('denda')
+                                    'subtitle' => 'Laporan ini dibuat pada ' . now(),
+                                    'records' =>  $records,
+                                    'total' => $recordLunas->sum('subtotal') + $recordLunas->sum('ongkir') + $recordLunas->sum('denda'),
+                                    'cols' => [
+                                        'dibuat' => 'created_at',
+                                        'email' => 'user.email',
+                                        'instansi' => 'user.pelanggan.instansi',
+                                        'lunas' => 'lunas',
+                                        'total' => 'total',
+                                    ]
                                 ])
                             )->stream();
                         }, 'Laporan pesanan ' . now() . '.pdf');
