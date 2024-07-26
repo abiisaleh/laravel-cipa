@@ -143,10 +143,24 @@ class PembayaranResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')->label('Pemesan')->searchable(),
                 Tables\Columns\TextColumn::make('user.pelanggan.instansi')->label('Instansi')->searchable(),
                 Tables\Columns\TextColumn::make('metode')->badge()->color(fn (string $state) => $state == 'Cash' ? 'success' : 'primary'),
+                Tables\Columns\TextColumn::make('subtotal')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->numeric()
+                    ->prefix('Rp '),
+                Tables\Columns\TextColumn::make('ongkir')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->numeric()
+                    ->prefix('Rp '),
+                Tables\Columns\TextColumn::make('denda')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->numeric()
+                    ->prefix('Rp '),
                 Tables\Columns\TextColumn::make('total')
                     ->numeric()
-                    ->prefix('Rp ')
-                    ->sortable(),
+                    ->prefix('Rp '),
                 Tables\Columns\IconColumn::make('lunas')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('diterima')
@@ -155,6 +169,7 @@ class PembayaranResource extends Resource
             ->searchPlaceholder('Cari Pemesan/Instansi')
             ->filters([
                 Filter::make('tunai')->query(fn (Builder $query) => $query->where('metode', 'tunai')),
+                Filter::make('denda')->query(fn (Builder $query) => $query->where('lunas', false)->whereMonth('tgl_diterima', '<', now()->month)),
                 TernaryFilter::make('lunas'),
                 TernaryFilter::make('diterima'),
                 DateRangeFilter::make('created_at')->label('Dibuat')
@@ -181,6 +196,7 @@ class PembayaranResource extends Resource
                                         'email' => 'user.email',
                                         'instansi' => 'user.pelanggan.instansi',
                                         'lunas' => 'lunas',
+                                        'denda' => 'denda',
                                         'total' => 'total',
                                     ]
                                 ])

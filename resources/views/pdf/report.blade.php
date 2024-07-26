@@ -16,6 +16,10 @@
                 <tr>
                     @foreach ($cols as $value)
                         @switch($value)
+                            @case('denda')
+                                <td class="text-right">{{ number_format(data_get($record, $value)) }}</td>
+                            @break
+
                             @case('total')
                                 <td class="text-right">{{ number_format(data_get($record, $value)) }}</td>
                             @break
