@@ -169,7 +169,7 @@ class PembayaranResource extends Resource
             ->searchPlaceholder('Cari Pemesan/Instansi')
             ->filters([
                 Filter::make('tunai')->query(fn (Builder $query) => $query->where('metode', 'tunai')),
-                Filter::make('denda')->query(fn (Builder $query) => $query->where('lunas', false)->whereMonth('tgl_diterima', '<', now()->month)),
+                Filter::make('denda')->query(fn (Builder $query) => $query->whereMonth('tgl_diterima', '<', now()->month)),
                 TernaryFilter::make('lunas'),
                 TernaryFilter::make('diterima'),
                 DateRangeFilter::make('created_at')->label('Dibuat')
