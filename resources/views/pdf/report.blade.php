@@ -8,7 +8,7 @@
     <table class="table mb-8">
         <thead>
             @foreach ($cols as $col => $value)
-                <th>{{ $col }}</th>
+                <th class="px-2" >{{ $col }}</th>
             @endforeach
         </thead>
         <tbody>
