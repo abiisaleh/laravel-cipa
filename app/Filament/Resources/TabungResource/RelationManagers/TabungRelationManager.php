@@ -70,7 +70,7 @@ class TabungRelationManager extends RelationManager
 
 public function isReadOnly(): bool
 {
-    return auth()->user()->role == 'petugas';
+    return auth()->user()->role != 'petugas';
 }
 
 }
