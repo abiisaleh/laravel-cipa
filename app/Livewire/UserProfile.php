@@ -42,6 +42,7 @@ class UserProfile extends Component implements HasForms
                             ->required(),
                         \Filament\Forms\Components\Select::make('kecamatan')
                             ->native(false)
+->live() 
                             ->options(function () {
                                 $data = File::json('kotajayapura.json');
                                 foreach ($data as $key => $value) {
