@@ -42,7 +42,6 @@ class UserProfile extends Component implements HasForms
                             ->required(),
                         \Filament\Forms\Components\Select::make('kecamatan')
                             ->native(false)
-->live() 
                             ->options(function () {
                                 $data = File::json('kotajayapura.json');
                                 foreach ($data as $key => $value) {
@@ -50,19 +49,20 @@ class UserProfile extends Component implements HasForms
                                 }
                                 return $options;
                             })
+                            ->live()
                             ->required(),
                         \Filament\Forms\Components\Select::make('kelurahan')
                             ->native(false)
                             ->options(function (Get $get) {
                                 $kecamatan = $get('kecamatan');
                                 $data = File::json('kotajayapura.json');
-                                if (!$kecamatan) {
-                                    return [];
+
+                                foreach ($data as $kecamatan => $value) {
+                                    foreach ($value as $kelurahan) {
+                                        $options[$kecamatan][$kelurahan] = $kelurahan;
+                                    }
                                 }
 
-                                foreach ($data[$kecamatan] as $item) {
-                                    $options[$item] = $item;
-                                }
                                 return $options;
                             })
                             ->required(),
