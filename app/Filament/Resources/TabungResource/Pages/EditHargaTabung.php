@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TabungResource\Pages;
 
 use App\Filament\Resources\TabungResource;
+use App\Filament\Resources\TabungResource\Widgets\TabungOverview;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -25,6 +26,13 @@ class EditTabung extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            TabungOverview::class,
         ];
     }
 }
