@@ -15,7 +15,7 @@ class Tabung extends Model
     protected function nama(): Attribute
     {
         return Attribute::make(
-            get: fn () => "{$this->jenisTabung->jenis} {$this->ukuranTabung->ukuran}"
+            get: fn () => "{$this->jenisTabung->jenis} {$this->ukuranTabung->ukuran} {$this->ukuranTabung->berat}kg"
         );
     }
 
@@ -23,6 +23,20 @@ class Tabung extends Model
     {
         return Attribute::make(
             get: fn () => $this->stokTabung()->where('active', true)->where('digunakan', false)->count()
+        );
+    }
+
+    protected function digunakan(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->stokTabung()->where('active', true)->where('digunakan', true)->count()
+        );
+    }
+
+    protected function total(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->stokTabung()->count()
         );
     }
 
