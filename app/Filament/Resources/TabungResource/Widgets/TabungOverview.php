@@ -11,7 +11,8 @@ class TabungOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Tabung tersedia', StokTabung::where('active', true)->where('digunakan', false)->count()),
+            Stat::make('Tabung tersedia', StokTabung::where('active', true)->where('digunakan', false)->count())
+                ->description('dari ' . StokTabung::count() . ' tabung'),
             Stat::make('Tabung rusak', StokTabung::where('active', false)->count()),
             Stat::make('Tabung digunakan', StokTabung::where('digunakan', true)->count()),
         ];

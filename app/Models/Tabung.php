@@ -26,6 +26,27 @@ class Tabung extends Model
         );
     }
 
+    protected function digunakan(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->stokTabung()->where('active', true)->where('digunakan', true)->count()
+        );
+    }
+
+    protected function rusak(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->stokTabung()->where('active', false)->count()
+        );
+    }
+
+    protected function total(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->stokTabung()->count()
+        );
+    }
+
     public function jenisTabung(): BelongsTo
     {
         return $this->belongsTo(JenisTabung::class);

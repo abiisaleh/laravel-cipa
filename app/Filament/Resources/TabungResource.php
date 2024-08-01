@@ -94,7 +94,19 @@ class TabungResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stok')
+                    ->numeric(),
+                Tables\Columns\TextColumn::make('digunakan')
                     ->numeric()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
+                Tables\Columns\TextColumn::make('rusak')
+                    ->numeric()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
+                Tables\Columns\TextColumn::make('total')
+                    ->numeric()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
             ])
             ->filters([
                 //
